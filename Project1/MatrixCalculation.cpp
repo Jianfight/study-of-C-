@@ -66,3 +66,22 @@ int matrixMultiplication()
 	system("pause");
 	return 0;
 }
+
+//矩阵的转置
+//根据输入的阶数，对矩阵进行转置
+void transmat(double B[][10], int n)
+{
+	int i, j;
+	double t;  //用于存储过程数据
+	//进行转置处理
+	for (i = 0; i < n - 1; i++)
+	{
+		for (j = i; j < n; j++)
+		{
+			t = B[i][j];
+			B[i][j] = B[j][i];
+			B[j][i] = t;
+		}
+	}
+
+}

@@ -1024,6 +1024,7 @@ int main()
 */
 
 //词频统计
+/*
 #define _CRT_SECURE_NO_WARNINGS
 #include<iostream>
 #include<cstring>
@@ -1099,3 +1100,285 @@ int main()
 	system("pause");
 	return 0;
 }
+*/
+
+//函数体的使用：计算圆的面积
+/*
+#include<iostream>
+using namespace std;
+double areaofcircle(double r)
+{
+	double pi = 3.1415926;
+	double area;
+
+	area = pi * r * r;
+
+	return area;
+}
+
+void main()
+{
+	double r, area;
+
+	cout << "请输入圆的半径(单位为cm)："; cin >> r;
+
+	area = areaofcircle(r);
+
+	cout << endl << "该圆的面积为(单位为平方厘米)：" << area << endl;
+
+	system("pause");
+}
+*/
+
+//函数体的使用：将一个字符显示n次
+/*
+#include<iostream>
+using namespace std;
+void display_char(int n, char str)
+{
+	for (int i = 0; i < n; i++)
+	{
+		cout << str << endl;
+	}
+}
+
+void main()
+{
+	char str;
+	int n;
+
+	cout << "请输入需要重复显示的字符："; cin >> str;
+	cout << endl << "请输入重复显示的次数："; cin >> n;
+
+	display_char(n, str);
+
+	system("pause");
+}
+*/
+
+//函数体的使用：引用传递
+/*
+#include<iostream>
+using namespace std;
+void swap(int& x, int& y)
+{
+	int tmp;
+	tmp = x; x = y; y = tmp;
+}
+
+void main()
+{
+	int a = 1, b = 2;
+	cout << "Before exchange: a=" << a << ",b=" << b << endl;
+	swap(a, b);
+	cout << "After exchange: a=" << a << ",b=" << b << endl;
+
+	system("pause");
+}
+*/
+
+//函数体的使用：数组名作为函数参数
+/*
+#include<iostream>
+#include<string>
+using namespace std;
+int fun(int B[], int n, int m)
+{
+	int s = 0;
+	for (int i = n; i < n+m; i++)
+	{
+		s = s + B[i];
+	}
+	return s;
+}
+
+void main()
+{
+	int A[100];
+	int n, m;   //用于存储参与计算的元素的起始位置和参与计算的元素的个数
+	int sum=0;  //用于存储累加和
+
+	cout << "请输入一维数组中的元素，元素间使用空格隔开,输入666表示停止输入" << endl;
+	for (int i = 0; i < 100; i++)
+	{
+		int tem;
+		cin >> tem;
+		if (tem != 666)
+		{
+			//cout << int(tem);
+			A[i] = tem;
+			//cout << A[i];
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	cout << "请输入需要累加求和的元素的起始位置：";
+	cin >> n;
+	cout << endl << "请输入需要进行累加计算的元素的个数：";
+	cin >> m;
+
+	sum = fun(A, n, m);
+	cout << endl << "累加和为：" << sum << endl;
+
+	system("pause");
+}
+*/
+
+//函数体的使用：二维数组名做参数，将N阶方阵转置
+/*
+#include<iostream>
+using namespace std;
+
+//根据输入的阶数，对矩阵进行转置
+void transmat(double B[][10], int n)
+{
+	int i,j;
+	double t;  //用于存储过程数据
+	//进行转置处理
+	for (i = 0; i < n-1; i++)
+	{
+		for (j = i; j < n; j++)
+		{
+			t = B[i][j];
+			B[i][j] = B[j][i];
+			B[j][i] = t;
+		}
+	}
+
+}
+
+void main()
+{
+	double A[10][10] = {{0,1,2,3,4,5,6,7,8,9},
+					 {0,1,2,3,4,5,6,7,8,9},
+					 {0,1,2,3,4,5,6,7,8,9},
+					 {0,1,2,3,4,5,6,7,8,9},
+					 {0,1,2,3,4,5,6,7,8,9},
+					 {0,1,2,3,4,5,6,7,8,9},
+					 {0,1,2,3,4,5,6,7,8,9},
+					 {0,1,2,3,4,5,6,7,8,9},
+					 {0,1,2,3,4,5,6,7,8,9},
+					 {0,1,2,3,4,5,6,7,8,9},
+					};
+
+	int n;           //用于存储需要转置的矩阵的阶数
+	int i, j;
+
+#if 0
+	cout << "请按行输入一个10X10的二维矩阵：" << endl;
+	for (i = 0; i < 10; i++)
+	{
+		for ( j = 0; j < 10; j++)
+		{
+			cin >> A[i][j];
+		}
+	}
+#endif
+
+	cout << "请输入需要转置的阶数n(n<10)："; cin >> n;
+
+	transmat(A, n);
+
+	//转置后显示
+	for ( i = 0; i < 10; i++)
+	{
+		for ( j = 0; j < 10; j++)
+		{
+			cout << A[i][j] << '\t';
+		}
+		cout << endl;
+	}
+
+	system("pause");
+}
+
+*/
+
+//函数体的使用：结构体变量作为函数参数
+/*
+#include<iostream>
+using namespace std;
+
+struct student
+{
+	int stID;
+	char name[20];
+	int age;
+};
+
+void print(student s)
+{
+	cout << "学号：" << s.stID << endl;
+	cout << "姓名：" << s.name << endl;
+	cout << "年纪：" << s.age << endl;
+}
+
+void main()
+{
+	struct student s = {101, "张三", 27};
+
+	print(s);
+
+	system("pause");
+}
+*/
+
+//求最大数
+#include<iostream>
+using namespace std;
+
+double maxofnumber(double a[], int n)
+{
+	double max = 0.000000000000001;
+
+	for (int i = 0; i < n; i++)
+	{
+		if (a[i] > max) 
+		{
+			max = a[i];
+		}
+	}
+	return max;
+}
+
+void main()
+{
+	double num[20]; //用于存储参与最大值筛选的数字
+	double max;    //用于存储最大值
+
+	int n=0;
+	int m = 1; // 用于记录是否继续循环计算
+
+	while (m)
+	{
+		cout << "请输入参与最大值筛选的数字,如要停止输入，请输入666：" << endl;
+		for (int i = 0; i < 20; i++)
+		{
+			double tem;
+			cin >> tem;
+			if (tem != 666.0)
+			{
+				num[i] = tem;
+				n++;             //用于存储输入输入元素的个数
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		max = maxofnumber(num, n);
+
+		cout << "最大值为：" << max << endl;
+
+		cout << "是否开启新一轮的筛选（继续输入1，停止输入0）："; 
+		cin >> m;
+	}
+	
+
+	system("pause");
+}
+
