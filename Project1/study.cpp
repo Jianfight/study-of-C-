@@ -1327,16 +1327,18 @@ void main()
 */
 
 //求最大数
+/*
 #include<iostream>
 using namespace std;
 
+//求最大数
 double maxofnumber(double a[], int n)
 {
 	double max = 0.000000000000001;
 
 	for (int i = 0; i < n; i++)
 	{
-		if (a[i] > max) 
+		if (a[i] > max)
 		{
 			max = a[i];
 		}
@@ -1374,11 +1376,315 @@ void main()
 
 		cout << "最大值为：" << max << endl;
 
-		cout << "是否开启新一轮的筛选（继续输入1，停止输入0）："; 
+		cout << "是否开启新一轮的筛选（继续输入1，停止输入0）：";
 		cin >> m;
 	}
-	
+
 
 	system("pause");
 }
+*/
+
+//二分查找法
+/*
+#include<iostream>
+using namespace std;
+
+int Search(int a[], int n, int key)     //a代表查找表，n查找表长度， key待查值。
+{
+	int low, high, mid;
+	low = 0;
+	high = n - 1;
+	while (low <= high)
+	{
+		mid = (low + high) / 2;
+		if (key == a[mid])
+		{
+			return mid + 1;
+		}
+		else if (key > a[mid])
+		{
+			low = mid + 1;
+		}
+		else if (key < a[mid])
+		{
+			high = mid - 1;
+		}
+	}
+	return -1;   //返回-1表示查找失败的标记
+
+}
+
+void main()
+{
+	int a[] = { 9, 15, 18, 21, 23, 29, 32, 36, 39, 43, 46, 50, 54 };
+	int k, x;      //k用于记录查找数的序号，x存放待查找值
+	int changDu;   //用于计算数组的长度
+	char again = 'n';
+
+	changDu = end(a) - begin(a);
+	cout << "数组长度为：" <<changDu << endl;
+	do
+	{
+		cout << "您要查找的数为："; cin >> x;
+		k = Search(a, changDu, x);
+		if (k >= 0)
+		{
+			cout << x << "是第" << k << "个数" << endl;
+
+		}
+		else
+		{
+			cout << x << "不在序列中！" << endl;
+		}
+		cout << "还找另一个数吗？（y或n）："; cin >> again;
+
+	} while (again != 'n');
+
+
+
+
+	system("pause");
+}
+
+*/
+
+//秦九韶算法求解多项式的值
+//秦九韶算法是用于求解那些包含任意多项而且自变量次数无限增大的多项式
+// 例如：y=9x^4+9.3x^3+6.8x^2+3.5x-1  ==>  y=(((9x+9.3)x+6.8)x+3.5)x+(-1)
+/*
+#include<iostream>
+using namespace std;
+
+//秦九韶算法求多项式的值
+double qinJS(double aa[], int nn, double xx)  //aa[]代表存放各项系数的一维数组，nn表示这个数组的长度，xx表示自变量的值
+{
+	double y = 0; //定义累加和变量并赋予初值
+	for (int i = nn - 1; i >= 0; i--)
+	{
+		cout << "第" << nn - i << "次循环：" << aa[i] << "+" << xx << "*" << y << endl;
+
+		y = aa[i] + xx * y;  //主要的循环体
+
+	}
+
+	return y;
+}
+
+//主函数：调用qinJS函数
+void main()
+{
+	int n;  //用于记录多项式的项数
+	double a[100], x, y; //用于记录多项式各项的系数，和自变量的值，因变量的值
+
+	//输入
+	cout << "多项式的项数为："; cin >> n; //输入项数
+	cout << endl << "x=:"; cin >> x; //输入自变量
+	for (int i = 0; i < n; i++)
+	{
+		cout << endl << "第" << i + 1 << "项的系数为：";  cin >> a[i];
+	}
+
+	//处理
+	y = qinJS(a, n, x);
+
+	//输出
+	cout << "当x=" << x << "时，f(x)=" << y << endl;
+
+	system("pause");
+}
+*/
+
+//使用递归函数求解非负整数的阶乘
+/*
+#include<iostream>
+using namespace std;
+
+//计算n的递归函数
+int jieCheng(int n)
+{
+	if (n == 0)
+	{
+		return 1;
+	}
+	else
+	{
+		return n * jieCheng(n - 1);
+	}
+}
+
+void main()
+{
+	int n;           //用于存放待求阶乘的数
+	int factorial;  //用于存放计算出来的结果
+
+	//输入
+	cout << "待求阶乘的数为："; cin >> n;
+
+	//处理
+	factorial = jieCheng(n);
+
+	//输出
+	cout << "结果为：" << factorial << endl;
+
+	system("pause");
+}
+*/
+
+//使用递归思想解决，Hanoi塔问题
+//有A,B,C三根柱子，在A柱子上有n个大小不同的金盘，大盘在下，小盘在上，要将A柱子上的金盘移动到C柱子上，每次只能搬动一个金盘
+//搬动过程中可以借助任何一根柱子暂时存放金盘，但必须满足大盘在下，小盘在上的条件。
+/*
+#include<iostream>
+using namespace std;
+
+int s; //定义一个全局变量用于存储移动的次数
+
+//函数move将一个盘子从x移动y
+void move(char x, char y)
+{
+	cout << x << "--->" << y << endl;
+	s++; //统计移动的次数
+}
+
+//hanoi塔问题
+void hanoi(int n, char a, char b, char c)  //n代表盘子的数量，a,b,c代表三根柱子
+{
+	if (n == 1)
+	{
+		move(a, c);
+	}
+	else
+	{
+		hanoi(n - 1, a, c, b); //借助c将n-1个盘子从a移到b
+		move(a, c);
+		hanoi(n - 1, b, a, c); //借助a将n-1个盘子从b移动到c
+	}
+}
+
+void main()
+{
+	int m;
+	cout << "请输入盘子数："; cin >> m;
+	cout << "移动" << m << "个盘子的过程如下：" << endl;
+	hanoi(m, 'A', 'B', 'C');
+	cout << "一共移动了" << s << "次。" << endl;
+	system("pause");
+}
+*/
+//进一步显示详细的汉诺塔解决算法
+/*
+#include<iostream>
+using namespace std;
+
+//hanoi函数
+void hanoi(int n, int p1, int p2, int p3) //n代表圆盘的个数，p1代表原桩，p2代表辅助桩，p3代表目标桩
+{
+	void move(int, char, char);  //前无定义，需声明
+	if (n == 1)
+	{
+		move(n, p1, p3);
+	}
+	else
+	{
+		hanoi(n - 1, p1, p3, p2);  //将原有的目标桩作为辅助桩，原有的辅助桩作为目标桩
+		move(n, p1, p3);           //调用move函数完成从源桩向目标桩的移动
+		hanoi(n - 1, p2, p1, p3);  //原有的辅助桩做为源桩，原有的源桩作为辅助桩，原有的目标桩不变
+	}
+
+}
+//移动函数
+void move(int n, char from, char to)
+{
+	cout << n << "号盘从" << from << "到" << to << endl;
+}
+//主函数
+void main()
+{
+	int n;
+	cout << "圆盘的个数为：";  cin >> n;
+	hanoi(n, 'A', 'B', 'C');
+
+	system("pause");
+}
+*/
+
+//内联函数的使用：计算整数平方
+/*
+#include<iostream>
+using namespace std;
+
+//将计算数的平方定义为一个内联函数
+inline double pingFang(double a)
+{
+	return a * a;
+}
+
+void main()
+{
+	double x[100]; //存放输入的数
+	int n=0;  //用于存储输入数的个数
+	double sum = 0; //用于存储输入数的平方和
+
+	//输入
+	for (int i = 0; i < 100; i++)
+	{
+		int panduan = 0;
+
+		cout << "请输入一系列正数，我们将返回它们的平方和(输入0表示停止输入)："; cin >> panduan;
+
+		if (panduan != 0)
+		{
+			x[i] = panduan;
+			n++;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	//处理
+	for (int i = 0; i < n; i++)
+	{
+		sum = sum + pingFang(x[i]); //编译程序在遇到内联函数调用式pingFang时，就用pingFang函数体中代码代替pingFang(),同时将实参代替形参
+	}
+
+	//输出
+	cout << "平方和为：" << sum << endl;
+
+
+	system("pause");
+}
+*/
+
+//函数重载：求一个整数和一个双精度数的绝对值的函数
+/*
+#include<iostream>
+using namespace std;
+
+//定义了两种求数字绝对值的函数
+int Abs(int a)
+{
+	return a >= 0 ? a : -a;
+}
+double Abs(double a)
+{
+	return a >= 0 ? a : -a;
+}
+
+void main()
+{
+	int a = -3;
+	double b = 35.5;
+	cout << Abs(a) << endl;
+	cout << Abs(b) << endl;
+
+	system("pause");
+}
+*/
+
+
+
+
 
