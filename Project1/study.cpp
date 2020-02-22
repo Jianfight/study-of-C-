@@ -1684,7 +1684,528 @@ void main()
 }
 */
 
+//递归求解Fibonacci（斐波那契）数列
+//Fibonacci数列：1，1，2，3，5，8，13，21，34，55，89..........,该数列前两项为1，1；其他项都是之前两项之和
+/*
+#include<iostream>
+using namespace std;
 
+//使用递归的方式来构建斐波那契数列
+long recursion(int n)  //形参n代表所求项的序号，该自定义函数的返回值为长整型
+{
+	if (n == 1 || n == 2)
+	{
+		return 1L;     //
+	}
+	else
+	{
+		return recursion(n - 1) + recursion(n - 2);
+	}
+}
+
+//使用尾递归改写，减少程序运行时的冗余
+long fibonacci(long f1, long f2, int n) //f1，f2表示之前一项和二项,n表示当前项的序号
+{
+	return n <= 1 ? f2 : fibonacci(f1 + f2, f1, n - 1);  //通过计算参数的方法，并且每次递归都保持上次计算状态
+}
+
+void main()
+{
+	int n;
+
+	cout << "求Fibonacci数列前多少项（1~36）？";  cin >> n;
+
+	for (int i = 1; i <= n; i++)
+	{
+		//cout << recursion(i) << '\t';
+		cout << fibonacci(1, 1, i) << '\t';
+	}
+
+	system("pause");
+}
+*/
+
+//使用递归的方法完成二分查找
+/*
+#include<iostream>
+using namespace std;
+
+//递归式的二分查找函数
+int find(int a[], int i, int j, double x)  //a[]代表存放顺序排放的数组，i代表起始位置，j代表终止位置，x代表待查找的数据
+{
+	int n, m, k;
+	n = j - i + 1;
+
+	if (n == 0)
+	{
+		return -1;
+	}
+	else
+	{
+		m = (i + j) / 2;
+		if (x == a[m])
+		{
+			return m +1;
+		}
+		else if (x < a[m])
+		{
+			k = find(a, i, m - 1, x);
+			return k;
+		}
+		else if (x > a[m])
+		{
+			k = find(a, m + 1, j, x);
+			return k;
+		}
+	}
+}
+
+void main()
+{
+	int a[10] = { 2, 4, 6, 8, 10, 12, 14, 16, 18, 20 }; //一维数组
+	int n = 10;                                         //记录数组的长度
+	int x;                                              //用于存放待查找的数据
+	char p = 'y';                                       //用于记录是否继续查找
+
+
+
+	while (p == 'y')
+	{
+		cout << "请输入需要查找的数据：";
+		cin >> x;
+
+		int f = find(a, 0, n - 1, x);
+		if (f != -1)
+		{
+			cout << f << endl;
+		}
+		else
+		{
+			cout << "列表中没有该数据。" << endl;
+		}
+
+		cout << "是否继续寻找下一个数？（y/n）"; cin >> p;
+	}
+
+
+	system("pause");
+}
+*/
+
+//函数重载：排序函数
+/*
+#include<iostream>
+#include<cstring>
+#include<stdio.h>
+using namespace std;
+
+const int COL = 20;
+
+//两数排序
+void sort(double& a, double& b)   //使用引用传递，直接修改实参的值
+{
+	if (a>b)
+	{
+		double tmp=a;
+		a = b;
+		b = tmp;
+	}
+}
+//三数排序
+void sort(double& a, double& b, double& c)
+{
+	sort(a, b);
+	sort(a, c);
+	sort(b, c);
+}
+//四数排序
+void sort(double& a, double& b, double& c, double& d)
+{
+	sort(a, b, c);
+	sort(a, d);
+	sort(b, c, d);
+}
+//实数数组的排序，选择排序法
+void sort(double a[], int n)  //使用数组作为形参，在调用时直接修改实参，n表示数组的长度
+{
+	for (int i = 0; i < n-1; i++)
+	{
+		for (int j = 0; j < n-1-i; j++)
+		{
+			sort(a[j], a[j + 1]);
+		}
+	}
+}
+//两字符串比较
+int mystrcmp(char s1[], char s2[])
+{
+	int i = 0;
+	while (s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0')
+		i++;
+	return s1[i] - s2[i];
+}
+//二字符串比较排序函数
+void sort(char s1[], char s2[])
+{
+	//调用二字符串比较函数执行二字符串排序
+	if (mystrcmp(s1, s2) > 0)
+	{
+		char tmp[20];
+		strcmp(tmp, s1);
+		strcmp(s1, s2);
+		strcmp(s2, tmp);
+	}
+}
+
+void sort(char a[][COL], int n)
+{
+	//调用二串排序函数执行串数组排序
+	for (int i = 0; i < n-1; i++)
+	{
+		for (int j = 0; j < n - 1; j++)
+		{
+			sort(a[j], a[j + 1]);
+		}
+	}
+}
+
+void main()
+{
+	//2个、3个、4个实数排序
+	double a = 22.8, b = 115, c = 33.2, d = -10.9;
+	sort(c, d);
+	cout << c << " " << d << endl;
+	sort(b, c, d);
+	cout << b << " " << c << " " << d << endl;
+	sort(a, b, c, d);
+	cout << a << " " << b << " " << c << " " << d << endl;
+
+	//实型数组排序
+	double v[] = { 18, 9.3, 3.5, 5.6, 10, 8, 9, 10.5, 29, 20.9, 8.6, -5.4, -3, -1, 19 };
+	sort(v, 15);
+	for (int i = 0; i < 15; i++)
+	{
+		if (i == 0)
+		{
+			cout << v[i];
+		}
+		else
+		{
+			cout << " " << v[i];
+		}
+	}
+	cout << endl;
+
+	system("pause");
+}
+*/
+
+//指针和变量的关系
+/*
+#include<iostream>
+using namespace std;
+void main()
+{
+	int a = 5, * pta = &a;
+	*pta = a + 8;
+	cout << a << "," << pta << "," << *pta << endl; //*pta表示pta所指向的变量即变量a。
+
+	system("pause");
+}
+*/
+
+//指针和函数的关系:指针传递
+/*
+#include<iostream>
+using namespace std;
+void swap(int* xp, int* yp)  //形参为指针变量
+{
+	int a;
+	a = *xp;     //在交换时通过间接访问运算符能够随实参变量进行操作
+	*xp = *yp;
+	*yp = a;
+}
+
+void main()
+{
+	int a = 5, b = 9;
+
+	cout << a << "   " << b << endl;
+
+	swap(&a, &b);        //实参为变量的地址
+
+	cout << endl << a << "   " << b << endl;
+	system("pause");
+}
+*/
+
+//利用指针参数带回函数中的多个值
+//计算一组一维数组元素的平均值，并能带回数组中的最大值与最小值
+/*
+#include<iostream>
+using namespace std;
+
+double faver(int s[], int n, int* max, int* min)  //s-一维数组，n-数组中元素的个数，max-指向最大值，min-指向最小值
+{
+	double sum=s[0];      //如果不将保存元素和的变量定义为双精度型，那么得到的结果将失去小数位，变量定义及初始化
+	*max = *min = s[0];
+
+	for (int i = 1; i < n; i++)
+	{
+		sum = sum + s[i];
+		if (*max < s[i]) *max = s[i];
+		if (*min > s[i]) *min = s[i];
+	}
+	return sum / n;
+}
+
+void main()
+{
+	int a[5] = { 80,89,90,95,100 }, max, min;
+	double aver;   //用于存储平均值
+
+	aver = faver(a, 5, &max, &min);
+	cout << "该组数的平均值为：" << aver << "  " << "最大值为：" << max << "  " << "最小值为：" << min << endl;
+
+	system("pause");
+}
+*/
+
+//返回指针的函数
+/*
+#include<iostream>
+using namespace std;
+
+//返回字符指针的函数,
+char* noblank(char* str)
+{
+	while (*str == ' ') str++;  //如果为空字符，则指针下移
+	return str;
+}
+
+void main()
+{
+	char* s1 = "    using namespace std;", *s2;
+
+	s2 = noblank(s1);
+
+	cout << s1 << endl;
+	cout << s2 << endl;
+
+	system("pause");
+}
+*/
+
+//指向函数的指针变量
+/*
+#include<iostream>
+#include<cmath>
+using namespace std;
+
+//定义指向double型函数的指针变量，该函数有一个double型参数。
+void main()
+{
+	double (*pf)(double);  //pf是一个指针变量，其所指的对象是一个函数，该函数有一个双精度型的形参，其返回值也是双精度型。
+					  //当定义一个指向函数的指针之后，我们可以通过该指针指向一个具体的函数。
+	pf = sqrt;             //pf 指向一个平方根函数（函数名就是函数的地址，也就是函数的指针）
+
+	//使用*pf可以调用该函数
+	cout << (*pf)(2.0) << endl;  //输出根号2的值
+	cout << sqrt(2.0) << endl; //上下两个式子是等价的
+
+
+	system("pause");
+}
+*/
+
+//指针：三个数排序
+/*
+#include<iostream>
+using namespace std;
+
+void swap(double*x, double*y)
+{
+	double tem; //临时存放数据的变量
+	tem = *x;
+	*x = *y;
+	*y = tem;
+}
+void paixu(double* a, double* b, double* c)
+{
+	//double tem;  //临时存放数据的变量
+
+	if (*a > *b)
+	{
+		swap(*a, *b);
+	}
+	if (*a > * c)
+	{
+		swap(*a, *c);
+	}
+	if (*b > * c)
+	{
+		swap(*b, *c);
+	}
+}
+void main()
+{
+	double a, b, c;
+
+	cout << "请输入三个数：" << endl;
+	cout << "a="; cin >> a;
+	cout << endl << "b="; cin >> b;
+	cout << endl << "c="; cin >> c;
+
+	paixu(&a, &b, &c);  //使用指针传递，在输入形参时应该给变量前添加取址运算符
+
+	cout << "三个数从小到大为：" << endl;
+	cout << a << " " << b << " " << c << endl;
+	system("pause");
+}
+*/
+
+//指针：去掉字符串首部的空格
+/*
+#include<iostream>
+using namespace std;
+
+//去掉字符串首部的空格
+char* ltrim(char s[])
+{
+	int k, j;
+	k = 0;
+	while (s[k] == ' ')
+	{
+		k++;
+	}
+	j = k;
+	while (s[j] != '\0')
+	{
+		s[j - k] = s[j];   //每个字符前移k位
+		j++;
+	}
+	s[j - k] = '\0';  //添加字符的结束符
+	return &s[0];     //返回字符串的第一个字符的地址，即首地址
+}
+void main()
+{
+	char str[100];
+	cout << "请输入头部包含空格的字符串：";
+	cin.getline(str, 99);
+
+	cout << "去空格前-|" << str << "|" << endl;
+	//ltrim(str);                                       //由于我们去除空格的自定义函数没有返回值，所以不能直接将其写在输出表达式中。改写成返回指针的函数。
+	cout << "去空格后-|" << ltrim(str) << "|" << endl;
+
+	system("pause");
+}
+*/
+
+//指针：计算圆的周长和面积
+/*
+#include<iostream>
+using namespace std;
+
+//计算圆的面积与周长
+void jiSuan(double radius, double* perimeter, double* area)
+{
+	double pi = 3.1415926;
+	*perimeter = 2 * pi * (radius);
+	*area = pi * (radius) * (radius);
+}
+
+//改写成指向函数指针的形式
+//计算周长
+double Length(double r)
+{
+	return 2 * 3.1415926 * r;
+}
+//计算面积
+double Area(double r)
+{
+	return 3.1415926 * r * r;
+}
+//指向函数的指针
+double Function(double (*f)(double), double x)
+{
+	return (*f)(x);
+}
+
+void main()
+{
+	double radius, per, area;
+
+	//输入
+	cout << "请输入圆的半径：";   cin >> radius;   cout << endl;
+
+	//处理
+	//jiSuan(radius, &per, &area);
+	per = Function(Length, radius);  //改写成指向函数的指针
+	area = Function(Area, radius);
+
+	//输出
+	cout << "该圆的周长为：" << per << "  " << "该圆的面积为：" << area << endl;
+
+
+	system("pause");
+}
+*/
+
+//指针：梯形法计算定积分
+//如果把函数的指针作为函数的形参，那么所定义的参数就是另一个函数，采用这种方式可以设计通用性更好的函数
+#include<iostream>
+#include<cmath>
+using namespace std;
+
+//在自定义函数中使用指向函数的指针作为参数来引入被积函数，形成梯形法求解定积分的通用程序
+
+//编写几个被积函数
+double sinx(double x)
+{
+	return sin(x);
+}
+
+double e_sqrx(double x)
+{
+	return exp(-x * x);
+}
+
+double x_sqrx(double x)
+{
+	return 2 * x / (1 + x * x);
+}
+
+//梯形法求解定积分函数
+double integral(double a, double b, double (*fun)(double), int n)    //a代表下区间，b代表上区间，第三个形参为指向被积函数的指针，n代表对于区间的等分数
+{
+	double h = (b - a) / n;                      //计算每个区间的长度
+	double sum = ((*fun)(a) + (*fun)(b)) / 2;   //调用被积函数计算起始与终止位置的y值
+
+	for (int i = 1; i < n; i++)
+	{
+		sum += (*fun)(a + i * h);     //a+i*h是表示通过下区间值和区间的长度，计算x1、x2、x3、..........
+	}
+
+	sum = sum * h;     //计算定积分的值
+	return sum;
+}
+
+//主函数
+void main()
+{
+	double s = integral(0, 3.1415926 / 2, sinx, 1000);   //计算0到Π/2之间，等分数为1000时，sinx的定积分
+	cout << "函数sin(x)在[0,PI/2]区间的定积分=" << s << endl;
+
+	s = integral(0, 1, e_sqrx, 1000);     //e的-x^2在0到1区间，等分数为1000时的定积分
+	cout << "函数e的（负x平方）次方在[0,1]区间的定积分=" << s << endl;
+
+	s = integral(-1, 5, x_sqrx, 1000);    //
+	cout << "函数2*x/(1+x*x)在[-1,5]区间的定积分=" << s << endl;
+
+	system("pause");
+
+	//该函数也可以将各个定积分的输入值改写为用户手动输入。
+}
 
 
 
