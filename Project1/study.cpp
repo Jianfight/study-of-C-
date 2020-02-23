@@ -2153,6 +2153,7 @@ void main()
 
 //指针：梯形法计算定积分
 //如果把函数的指针作为函数的形参，那么所定义的参数就是另一个函数，采用这种方式可以设计通用性更好的函数
+/*
 #include<iostream>
 #include<cmath>
 using namespace std;
@@ -2179,7 +2180,7 @@ double x_sqrx(double x)
 double integral(double a, double b, double (*fun)(double), int n)    //a代表下区间，b代表上区间，第三个形参为指向被积函数的指针，n代表对于区间的等分数
 {
 	double h = (b - a) / n;                      //计算每个区间的长度
-	double sum = ((*fun)(a) + (*fun)(b)) / 2;   //调用被积函数计算起始与终止位置的y值
+	double sum = ((*fun)(a) + (*fun)(b)) / 2;   //调用被积函数计算起始与终止位置的y值。
 
 	for (int i = 1; i < n; i++)
 	{
@@ -2206,6 +2207,166 @@ void main()
 
 	//该函数也可以将各个定积分的输入值改写为用户手动输入。
 }
+*/
 
+
+//指针：一维数组与指针
+/*
+#include<iostream>
+using namespace std;
+
+void main()
+{
+	int a[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, * p = a, i;
+	i = 3;
+
+	cout << *p << endl;
+	p++;                      //指针的算数运算与指针的变量类型有关，p指向int型，因int型变量为4个字节长度，所以，p+1相当于p+4。
+
+	cout << *p << endl;
+
+
+	system("pause");
+}
+*/
+
+//指针：指针的关系运算
+/*
+#include<iostream>
+using namespace std;
+
+void main()
+{
+	double x[5] = { 1, 2, 3.5, 4, 5.7 }, * p;
+
+	for (p=x; p < x+5; p++)     //x+5在这里也属于指针，x+5可以看作是一个指针常量，其代表的是&x[5]，p < x+5代表了一种指针的关系运算
+	{
+		cout << *p << "\t";
+	}
+	cout << endl;
+
+	system("pause");
+}
+*/
+
+//指针：使用数组元素不同的表示形式输出数组元素的值
+/*
+#include<iostream>
+using namespace std;
+
+void main()
+{
+	int a[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, * p = a, i;
+
+	//下标法
+	for (i=0; i < 10; i++)
+	{
+		cout << "下标法：" << a[i] << "\t" << p[i] << endl;
+	}
+
+	//指针法
+	for (i = 0; i < 10; i++)
+	{
+		cout << "指针法：" << *(a + i) << "\t" << *(p + i) << endl;
+	}
+
+	system("pause");
+}
+*/
+
+//指针：二维数组的指针
+/*
+#include<iostream>
+using namespace std;
+
+void main()
+{
+	int a[3][4], i, j;
+	int* p, max = a[0][0];
+
+	//数据输入
+	for (i = 0; i < 3; i++)
+	{
+		for (j = 0; j < 4; j++)
+		{
+			cout << "请输入整数（共需要12个）："; cin >> a[i][j];
+		}
+	}
+
+	//在数组中寻找最大值
+	for (p = &a[0][0]; p < &a[0][0] + 12; p++)   //使用地址的形式，减少了两层嵌套循环的方式，因为已知数组的大小，故可以使用该方法
+	{
+		if (*p > max) max = *p;
+	}
+
+	cout << "数组中的最大值为：" << max << endl;
+
+	system("pause");
+}
+*/
+
+//指针：指向具有M个元素的一维数组指针
+/*
+#include<iostream>
+using namespace std;
+
+void main()
+{
+	int a[3][4] = { {1, 3, 5, 7}, {2, 4, 6, 8}, {1, 2, 3, 4} }, (*p)[4];    //p是指向具有4个元素的，一维数组的指针变量，p是一个行指针变量
+
+#if 0 //方法一
+	for (p = a; p < a + 3; p++)
+	{
+		cout << p << endl;  //输出行地址
+		//cout << *p << endl; //
+		for (int j = 0; j < 4; j++)   //用整型变量j来控制该行中不同的列元素
+		{
+			cout << *(*p + j) << "\t";  //p是一个行指针，初值为0行的行地址；p++后，p指向下一行，*p代表该行0列元素的地址，*p+j为该行j列元素的地址，*(*p+j)表示地址对应的数据
+		}
+		cout << endl;
+	}
+#endif
+
+	//方法二
+	for (p = a; p < a + 3; p++)
+	{
+		for (int* q = *p; q < *p + 4; q++)  //
+		{
+			cout << *q << "\t";
+		}
+		cout << endl;
+	}
+
+	system("pause");
+}
+*/
+
+//指针：字符串指针
+#include<iostream>
+using namespace std;
+
+char* strchr(char* str, char c)   //形参：传入一个字符串，c代表要被查找的字符
+//算法：从str的第一个字符查起，查到字符后就返回该字符的地址;查不到则返回空值NULL。
+{
+	while (*str != '\0')
+	{
+		if (*str == c) return str;     //如果找到了被查找的字符，返回该字符的地址
+		str++;
+	}
+	return NULL;   //如果查找后没有该字符，则返回空。
+}
+
+//编写在字符串中查找某字符的函数
+void main()
+{
+	char* str = "abcdefghij";
+	char* p;
+	p = strchr(str, 'g');
+	if (p == NULL) cout << "字符串中无该字符。" << endl;
+	else
+		cout << "该字符在串中的位置是（起始位置为0）：" << p - str << endl;     //p - str,p中存储的是被查找字符在字符串中的地址，str中存储的是字符串的首地址，两个地址做减法的得出两个地址间的差值，因为字符只占一个字节故这个差值为该字符在字符串中的索引号
+
+	system("pause");
+}
 
 
