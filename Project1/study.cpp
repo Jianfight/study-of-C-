@@ -2342,6 +2342,7 @@ void main()
 */
 
 //指针：字符串指针
+/*
 #include<iostream>
 using namespace std;
 
@@ -2368,5 +2369,403 @@ void main()
 
 	system("pause");
 }
+*/
 
+//指针：将月份数值转换为相应的英文名称
+/*
+#include<iostream>
+using namespace std;
+
+char* month_name(int n)
+{
+	static char* month[] =    //static表示该指针数组为静态，静态数组，函数结束后不释放空间
+	{
+		"lllegal month",    //月份值错误
+		"January",          //一月
+		"February",         //二月
+		"March",            //三月
+		"April",            //四月
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December"
+	};
+
+	return (n >= 1 && n <= 12) ? month[n] : month[0];   //返回字符串的指针
+}
+
+void main()
+{
+	int n;
+
+	cout << "请输入月份数：";  cin >> n;
+	cout << n << "-" << month_name(n) << endl;
+
+	system("pause");
+}
+*/
+
+//指针：结构体与指针
+/*
+#include<iostream>
+using namespace std;
+
+void main()
+{
+	//定义日期结构类型
+	struct Date
+	{
+		int year;
+		int month;
+		int day;
+	};
+
+
+	Date d = { 2015, 4, 8 }, * p = &d;   //定义日期结构变量和指针变量
+
+	//第一种输出方法
+	cout << (*p).year << "-" << (*p).month << "-" << (*p).day << endl;
+
+	//第二种输出方法
+	cout << p->year << "-" << p->month << "-" << p->day << endl;
+
+	system("pause");
+}
+*/
+
+//指针：动态数组，动态申请单个变量，动态申请数组
+/*
+#include<iostream>
+using namespace std;
+
+void main()
+{
+	double* p;
+
+	p = new double;   //动态申请一个双精度型的无名变量，并将其首地址存放在指针p中。
+
+	*p = 100.0;
+	//double *p = new double(100.0);      //综合成一个语句的形式
+
+	cout << p << "-》" << *p << endl;
+
+	//动态申请数组，动态申请存放80个字符的数组
+	char* str;
+	str = new char[1];
+	//*str = 'a';
+	//cout << str;
+
+	//动态创建n个元素的一维整型数组
+	int n, * pint;
+
+	cout << "请输入n值：";
+	cin >> n;               //键盘输入n
+
+	pint = new int[n];     //动态建立n个元素的一维数组，申请成功的话指针指向该数组的首地址，申请不成功，系for统将返回一个空指针。
+
+	if (p == NULL)
+	{
+		cout << "空间申请失败！";
+	}
+
+	cout << "请输入n个数：";
+	for (int i = 0; i < n; i++)
+	{
+		cin >> p[i];      //p[i]等价于*(p+i)
+	}
+
+	system("pause");
+}
+*/
+
+//指针：动态数组实例
+/*
+#include<iostream>
+using namespace std;
+
+//定义一个动态数组输入函数
+void input(int* p, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		cout << "第" << i + 1 << "个数为：";
+		cin >> *p;   //输入数据
+		cout << endl;
+		p++;         //记录一个数据后，指针指向下一个内存空间
+	}
+}
+
+//求数组中的最大值
+int findmax(int* p, int n)
+{
+	int max, i;
+	int* q;   //用于保存首地址
+
+	q = p;
+	max = *q;
+	q++;
+
+	for (i = 1; i < n; i++)
+	{
+		if (max < *q) max = *q;
+		q++;                      //对比完后指向下一个地址，进行下一个数的比较
+	}
+
+	return max;
+}
+
+
+int main()
+{
+	int* p, n;
+	cout << "请输入n的值：";
+	cin >> n;
+
+	p = new int[n];
+	if (p == NULL)     //判断空间申请是否成功
+	{
+		cout << "空间申请失败！";
+		return 1;
+	}
+	else
+	{
+		input(p, n);              //输入元素
+		cout << "输入数据的最大值为：" << findmax(p, n) << endl;    //求最大值
+		delete[]p;                //释放申请到的内存空间
+	}
+
+	system("pause");
+	return 0;
+}
+*/
+
+//指针实例：逆置数组
+/*
+#include<iostream>
+using namespace std;
+
+//将数组中的元素调换位置
+void invert(double* x, int n)
+{
+	double* i, * j, t;
+
+	i = x;
+	j = x + n - 1;
+
+	while (i < j)
+	{
+		t = *i;
+		*i = *j;
+		*j = t;
+
+		i++;
+		j--;
+	}
+}
+void main()
+{
+	int n;    //用于计算动态数组的长度
+	cout << "请输入数组的长度：";  cin >> n;
+	cout << endl;
+
+	double* a = new double[n];    //申请动态数组
+
+#if 0
+	if (p == NULL)     //判断空间申请是否成功
+	{
+		cout << "空间申请失败！";
+		//return 1;
+	}
+#endif
+
+	cout << a << endl;
+
+	for (int i = 0; i < n; i++)
+	{
+		cout << "第" << i + 1 << "个元素为："; cin >> a[i];  //如果使用下标的形式给数组中的元素赋值，就不用在输入完成后将指针回调到数组开头
+		cout << endl;
+		//cout << a << endl;    //调试语句
+		//cout << "第" << i + 1 << "个元素为："; cin >> *a;  //使用指针的形式为数组元素赋值，在赋值结束后需要将指针回调到数组的开头
+		//a++;
+	}
+
+	//a = a - n;            //动态数组输入完后将，指针从末尾指向开头，方便读取数组
+	//cout << a << endl;
+
+	invert(a, n);
+	for (int i = 0; i < n; i++)
+	{
+		cout << "第" << i + 1 << "个元素为：" << a[i] << endl;
+		//a++;
+	}
+
+	delete[]a;       //释放动态数组
+
+	system("pause");
+}
+*/
+
+//指针实例：字符串排序
+//自定义了字符串的拷贝函数和字符串的比较函数
+/*
+#define _CRT_SECURE_NO_WARNINGS     //使用strcpy函数时可能会出现安全性错误的提示，使用该行来保证程序的运行
+#include<iostream>
+#include<cstring>
+
+using namespace std;
+//自定义字符串拷贝函数
+void mystrcpy(char* s1, char* s2)
+{
+	while (*s2 != 0)
+		*s1++ = *s2++;   //将字符串s2中的字符复制到s1中。
+	*s1 = '\0';          //在复制结束后，给s1字串添加字符串结束符
+}
+//自定义字符串比较函数
+int mystrcmp(char* s1, char* s2)    //字符串比较函数，其功能是将两字符串从第一个字符开始比较，如果相等比较下一个，如果不相等，返回两个比较字符的差值
+{
+	while (*s1 == *s2 && *s1 != 0 && *s2 != 0)
+	{
+		s1++;
+		s2++;
+	}
+	return *s1 - *s2;
+}
+
+//自定义函数sort：字符串排序
+void sort(char (*a)[10], int n)   //*a指向字符二维数组的行，n代表字符二维数组的行数
+{
+	int i, j;
+
+	for (i = 0; i < n - 1; i++)
+	{
+		for (j = i + 1; j < n; j++)
+		{
+			 if (mystrcmp(a[i], a[j]) > 0)   //二维字符数组中，每一行存储着一个字符串，如果后一行的字符串大于前一行的字符串，则交换它们
+			{
+				char t[10];
+				mystrcpy(t, a[i]);
+				mystrcpy(a[i], a[j]);
+				mystrcpy(a[j], t);
+			}
+		}
+	}
+}
+
+void main()
+{
+	//输入
+	//char a[][10] = { "zhang", "wang", "wen", "xu", "li", "zhou" };  //字符二维数组用于存储字符串，允许的字符串长度最大为10
+	int n;
+	cout << "请输入字符串的个数：";   cin >> n;
+
+	//定义一个二维的字符数组
+	char(*a)[10] = new char[n][10];
+	//数据输入
+	for (int i = 0; i < n; i++)
+	{
+		cout << "第" << i + 1 << "个字符串为：(字符串的长度不要超过10)";
+		cin >> a[i];
+	}
+
+	//排序前输出
+	cout << "排序前为：";
+	for (int i = 0; i < n; i++)
+	{
+		cout << a[i] << "\t";
+	}
+	cout << endl;
+
+	//处理
+	sort(a, n);
+
+	//输出
+	cout << "排序后为：";
+	for (int i = 0; i < n; i++)
+	{
+		cout << a[i] << "\t";
+	}
+	cout << endl;
+
+	//释放动态数组
+	delete[]a;
+
+	system("pause");
+}
+*/
+
+//指针实例：二进制IP地址转化为点分十进制
+//自定义了8位的二进制转换为十进制的函数
+/*
+#include<iostream>
+using namespace std;
+//自定义检查函数：检查串中是否有1和0外的字符
+bool check(char* a)
+{
+	int i;
+	for (i = 0; i < 32; i++)
+	{
+		if (a[i] != '1' && a[i] != '0')
+		{
+			return false;   //如果有0或者1以外的字符，返回false
+		}
+	}
+	return true;
+}
+
+//自定义转换函数：将8位二进制数转化为十进制数
+int trans(char* str)
+{
+	int n = 0, i;
+	for (i = 0; i < 8; i++)
+	{
+		if (str[i] == '1')
+		{
+			n = n * 2 + 1;
+		}
+		else
+		{
+			n = n * 2;
+		}
+	}
+	return n;
+}
+
+void main()
+{
+	char IP[33];
+	char d = 'y';   //用于判断是否继续转换
+
+	do
+	{
+		cout << "请输入32位二进制IP地址："; cin >> IP;
+
+		if (strlen(IP) != 32)
+		{
+			cout << "IP地址的长度应为32位。" << endl;  //11001010011101010011101001100100
+		}
+		else
+			if (!check(IP))
+			{
+				cout << "串中有0/1以外的字符，非正确IP地址。" << endl;
+			}
+
+
+			else
+			{
+				cout << "IP地址对应的点分十进制写法：" << endl;
+				cout << trans(IP) << '.' << trans(IP + 8) << '.' << trans(IP + 16) << '.' << trans(IP + 24) << endl;  //实参是每8位IP地址的首地址，返回值为十进制IP
+			}
+
+
+		cout << "是否继续进行转换？（y/n）";  cin >> d;
+	} while (d == 'y');
+
+	system("pause");
+}
+
+*/
 
