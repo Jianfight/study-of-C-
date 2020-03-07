@@ -130,6 +130,7 @@ return 1;
 */
 
 //计算是否是闰年
+//算法原理：四年一闰，百年不闰，四百年再闰。
 /*
 #include<iostream>
 using namespace std;
@@ -2743,12 +2744,12 @@ void main()
 	{
 		cout << "请输入32位二进制IP地址："; cin >> IP;
 
-		if (strlen(IP) != 32)
+		if (strlen(IP) != 32)  //有效性检验
 		{
 			cout << "IP地址的长度应为32位。" << endl;  //11001010011101010011101001100100
 		}
 		else
-			if (!check(IP))
+			if (!check(IP))   //有效性检验
 			{
 				cout << "串中有0/1以外的字符，非正确IP地址。" << endl;
 			}
@@ -2769,3 +2770,1023 @@ void main()
 
 */
 
+//类：定义，使用
+/*
+#include<iostream>
+#include<windows.h>
+
+using namespace std;
+
+class Clock  //定义一个钟表类
+{
+private:   //数据成员一般为私有成员
+	int Hour;    //小时属性
+	int Minute;  //分钟属性
+	int Seccond; //秒属性
+	float Price;  //价格属性
+
+public:    //函数成员一般为公有成员
+	void Set(int h, int m, int s, float p);   //设置时间操作
+	void Run();                               //钟表运转操作
+	void Report_Time();                       //报时响铃操作
+	void Show_Time() { cout << Hour << ":" << Minute << ":" << Seccond; }; //显示时间操作,在类体内直接定义函数成员
+};
+
+//在类外部定义成员函数,设置修改4个数据成员的值的函数
+void Clock::Set(int h, int m, int s, float p)
+{
+	Hour = h >= 0 && h <= 24 ? h:0;         //在赋值之前先进行有效性检验
+	Minute = m >= 0 && m <= 60? m:0;
+	Seccond = s >= 0 && m <= 60 ? m : 0;
+	Price = p;
+}
+
+//在类外部定义成员函数，模拟运行钟表运行函数
+void Clock::Run()
+{
+	int i = 0;
+	for (i = 0; i < 10; i++)
+	{
+		Seccond++;
+		if (Seccond == 60)
+		{
+			Seccond = 0;
+			Minute++;
+			if (Minute == 60)
+			{
+				Minute = 0;
+				Hour++;
+				if (Hour == 24) Hour = 0;
+			}
+		}
+		//cout << "\r";    //不换行，返回当前行的首位,之间之所以添加多个空格，是为了将以前的显示进行遮盖处理
+		cout << endl;
+		Sleep(1000);                //程序暂停运行秒
+		Show_Time();
+	}
+}
+
+//类外定义成员函数：整点报时
+void Clock :: Report_Time()
+{
+	cout << endl;
+	// Show_Time();
+	if (Minute == 0 && Seccond == 0)
+	{
+		for (int i = 0; i < Hour; i++)
+		{
+			cout << "\007";    //控制计算机的蜂鸣器响铃，"/007"让计算机的蜂鸣器响铃一次。
+			Sleep(1000);
+		}
+	}
+}
+
+void main()
+{
+	//类的声明
+	Clock XJTU_Big_Ben;   //该语句声明了三个对象，也可以称声明了三个变量。
+
+	XJTU_Big_Ben.Set(0, 0, 0, 1000);
+	cout << "钟表设置的时间：\n";
+	//XJTU_Big_Ben.Show_Time();
+	XJTU_Big_Ben.Report_Time();
+	XJTU_Big_Ben.Run();
+	cout << endl;
+	system("pause");
+
+	XJTU_Big_Ben.Set(5, 59, 50, 9000);
+	cout << "\n钟表设置的时间：\n";
+	XJTU_Big_Ben.Run();
+	XJTU_Big_Ben.Report_Time();
+
+	cout << endl;
+	XJTU_Big_Ben.Show_Time();
+	cout << endl;
+
+	//对象与对象之间的传递
+	Clock Omiga;
+	cout << "显示Omiga的时间：";
+	Omiga = XJTU_Big_Ben;
+	Omiga.Show_Time();
+	cout << endl;
+
+	system("pause");
+}
+*/
+
+//类：私有、公有与保护
+/*
+#include<iostream>
+using namespace std;
+
+//定义了一个分数类
+class Fraction
+{
+protected:
+	int a;  //分子可以定义为保护成员
+	int b;                        //分母应该定义为私有成员或保护成员，防止分母为0
+
+private:
+	//int b;                        //分母应该定义为私有成员，防止分母为0
+	int divisor(int p, int q);    //求最大公约数，其实该函数放到三种类型成员中都可以
+
+public:
+	void Set(int aa, int bb);   //设置分子分母
+	void show();                //显示分数
+	Fraction add(Fraction u);   //加一个分数
+
+};
+
+//设置分子、分母
+void Fraction::Set(int aa, int bb)
+{
+	a = aa;
+	if (bb != 0)       //分母有效性检验
+	{
+		b = bb;
+	}
+	else
+	{
+		a = 0;
+		b = 1;
+	}
+	//cout << a << "/" << b << endl;
+}
+
+//显示分数
+void Fraction::show()
+{
+	cout << a << "/" << b;
+}
+
+//分数相加，本类对象加u，该处需要仔细的琢磨，返回的是类，参数也是同类的一个实体
+Fraction Fraction::add(Fraction u)
+{
+	int tmp;
+	Fraction v;
+
+	v.a = a * u.b + b * u.a;   //计算分子
+	v.b = b * u.b;              //计算分母
+
+	tmp = divisor(v.a, v.b);   //计算分子、分母的公约数
+
+	v.a = v.a / tmp;           //约去公约数
+	v.b = v.b / tmp;           //约去公约数
+
+	return v;                 //返回结果
+}
+
+//计算最大公约数
+int Fraction::divisor(int p, int q)
+{
+	int r;
+	if (p < q)
+	{
+		int tmp;
+		tmp = p;
+		p = q;
+		q = tmp;
+	}
+	r = p % q;
+	while (r != 0)
+	{
+		p = q;
+		q = r;
+		r = p % q;
+	}
+	return q;
+}
+
+
+//继承分数类，创建一个实数类
+class Real : public Fraction
+{
+public:
+	void show_real()
+	{
+		cout << a << '/' << b << '=' << a / (double)b << endl;   //b在分数类中位于私有成员中，在此处不可访问，应将其调配到保护成员中
+	}
+};
+
+//主函数
+void main()
+{
+	Real f1, f2, f3;   //声明类的三个对象
+	int a, b, c, d;
+
+	cout << "\n请分别输入两个分数的分子与分母，分母为0时退出\n";
+
+	cin >> a >> b;
+	cin >> c >> d;
+
+	f1.Set(a, b);
+	f2.Set(c, d);
+
+	f1.show_real();
+	f2.show_real();
+
+	system("pause");
+}
+*/
+
+//类：日期类的设计（使用继承的方式，定义类）
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<stdlib.h>
+#include<time.h>       //取得系统得日期需要添加该头文件
+using namespace std;
+
+#if 0
+//定义一个时间结构体
+struct tm
+{
+	int tm_year;
+	int tm_mon;
+	int tm_mday;
+};
+#endif
+//定义一个日期类
+class Date
+{
+private:
+	int year, month, day;   //将存储年月日的变量私有化
+
+	//取得系统的日期
+	void SetSystemDate();
+
+
+public:
+	//设置一个初始化年月日的函数
+	void init(int y, int m, int d);
+
+	//年月日格式显示
+	void  print_ymd() { cout << year << '.' << month << '.' << day <<endl; }
+
+	//月日年格式显示
+	void print_mdn() { cout << month << '.' << day << '.' << year <<endl; }
+
+	//取出年份
+	int get_year() {return year; }
+
+	//取出月份
+	int get_month() { return month; }
+
+	//取出日期
+	int get_day() { return day; }
+
+	//判断是否为闰年
+	bool IsLeapYear();
+};
+
+//类外定义取得系统得日期
+void Date::SetSystemDate()
+{
+	//取得系统日期
+	tm* gm;                     //tm是时间（含年月日时分秒）结构体,其包含在time.h头文件中
+	time_t t = time(NULL);      //time_t是长整型，t表示（总秒数，即从某一时刻起到现在的总秒数）
+	gm = gmtime(&t);            //gmtime()函数是根据获取的这个总秒数来计算从那个时刻起到现在经过了多少年，在最后一年中又经过了多少个月，在这个月中又经过了多少天
+
+	year = 1900 + gm->tm_year;
+	month = gm->tm_mon + 1;      //之所以在计算月份的时候加1，是因为我们根据总秒数计算出的数据是已经过去了多少个月，过去的月和现在的月相差1
+	day = gm->tm_mday;
+}
+
+//类外定义日期初始化函数
+void Date::init(int y, int m, int d)
+{
+	//再初始化函数或着设置函数中应先进行合法性检验，根据情况赋值
+	if(y >= 1000 && y <=9999 )
+		year = y;
+	else
+	{
+		SetSystemDate();  //如果输入得日期格式不合理，返回系统当前得日期
+		return;
+	}
+
+	if(m >= 1 && m <= 12)
+		month = m;
+	else
+	{
+		SetSystemDate();  //如果输入得日期格式不合理，返回系统当前得日期
+		return;
+	}
+
+	if(d >= 1 && d <= 31)
+		day = d;
+	else
+	{
+		SetSystemDate();  //如果输入得日期格式不合理，返回系统当前得日期
+		return;
+	}
+}
+
+//类外定义判断闰年函数
+//算法原理：四年一闰，百年不闰，四百年再闰。
+bool Date::IsLeapYear()
+{
+	if ((((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//主函数
+void main()
+{
+	Date date1;          //创建一个日期对象，但未初始化
+	date1.print_ymd();  //显示未初始化数据的情况
+	system("pause");
+
+	date1.init(2008, 3, 28);  //初始化数据成员
+	date1.print_ymd();
+	system("pause");
+
+	Date date2;
+	date2.init(2006, 13, 28); //初始化一个错误的日期类对象
+	date2.print_mdn();        //按月日年显示日期
+	system("pause");
+
+	if (date1.IsLeapYear())     //测试判断闰年函数
+	{
+		cout << date1.get_year() << "是闰年" << endl;
+	}
+	else
+	{
+		cout << date1.get_year() << "不是闰年" << endl;
+	}
+	system("pause");
+
+}
+
+
+//类：日期时间类继承性设计思考(初探)
+//上面我们已经设计了一个日期类，接下来我们再设计一个时间类，再根据这两个类，使用继承的方法来构建日期时间类
+class Time  //定义一个钟表类
+{
+private:   //数据成员一般为私有成员
+	int Hour;    //小时属性
+	int Minute;  //分钟属性
+	int Second; //秒属性
+
+
+public:    //函数成员一般为公有成员
+	void init_time(int h, int m, int s);   //设置时间操作
+	void Show_Time() { cout << Hour << ":" << Minute << ":" << Second; }; //显示时间操作,在类体内直接定义函数成员
+
+	int get_hour() { return Hour; }
+	int get_minute() { return Minute; }
+	int get_second() { return Second; }
+};
+
+//在类外部定义成员函数,设置修改4个数据成员的值的函数
+void Time::init_time(int h, int m, int s)
+{
+	Hour = h >= 0 && h <= 24 ? h : 0;         //在赋值之前先进行有效性检验
+	Minute = m >= 0 && m <= 60 ? m : 0;
+	Second = s >= 0 && m <= 60 ? m : 0;
+}
+
+
+//通过继承的形式来构建日期时间类
+class DateTime :public Date, Time
+{
+
+public:
+	void init_datetime(int y, int m, int d, int h, int mi, int s) { init(y, m, d); init_time(h, mi, s); }  //通过继承的方式，用两个类中的初始化函数构建该类的初始化函数
+	void show_datetime() { print_ymd(); Show_Time(); }     //通过继承的方式，用两个类中的显示函数构建该类的显示函数
+
+};
+
+#if 0
+//测试日期时间类的主函数
+void main()
+{
+	DateTime wj;
+
+	wj.init_datetime(2020, 2, 28, 18, 3, 50);
+	wj.show_datetime();
+
+	cout << endl;
+	system("pause");
+}
+#endif
+*/
+
+//类：汽车类的设计
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<cstring>
+#include<Windows.h>
+#pragma comment (lib, "winmm.lib")  //是为了在调用mciSendStringA函数时会提示无法解析外部函数，该语句链接winmm.lib
+
+using namespace std;
+
+class automobile
+{
+private:
+
+	char type[20];             //汽车型号
+	char color[20];            //汽车颜色
+	float price;               //汽车价格
+	int carry_weight;          //载重量
+	int carry_custome;         //载客量
+
+public:
+
+	void set_data(char* t, char* c, float pri, int cw, int cc);   //初始化或修改数据成员
+	void movecar(int l, int k);                                 //汽车水平运动k步
+	void horming(int num);                                      //汽车鸣笛
+	void downcar(int l);                                        //汽车垂直向下运动
+	void play_mp3(char* ps);                                    //播放音乐
+	char* show_type() { return type; }                          //取出汽车型号
+
+};
+
+//类外定义初始化函数
+void automobile::set_data(char* t, char* c, float pri, int cw, int cc)
+{
+	strcpy(type, t);
+	strcpy(color, c);
+	price = pri;
+	carry_weight = cw;
+	carry_custome = cc;
+}
+
+//类外定义水平运动函数
+void automobile::movecar(int l, int k)
+{
+	cout << "\n" << type << "水平直线运动：" << endl;
+	for (int i = 0; i < l; i++)
+	{
+		cout << ' ' << "O-O";
+		Sleep(1000 / k);
+		cout << "\b\b\b";
+	}
+}
+
+//类外定义垂直下降运动函数
+void automobile::downcar(int l)
+{
+	//垂直下降运动
+	cout << "\n" << type << "垂直下降运动：" << endl;
+	for (int i = 0; i < l; i++)
+	{
+		cout << "O-O";
+		Sleep(500);
+		cout << "\b\b\b" << "   ";
+		cout << endl;
+	}
+}
+
+//类外定义鸣笛函数
+void automobile::horming(int num)
+{
+	for (int i = 0; i < num; i++)
+	{
+		cout << type;
+		cout << "\007" << "  di....." << endl;
+		Sleep(1000);
+	}
+}
+
+//类外定义播放音乐函数
+void automobile::play_mp3(char* ps)
+{
+	char str[100] = "play ";
+	strcat(str, ps);                       //将两个字符串连接起来
+	cout << str;
+	mciSendStringA(str, NULL, 0, NULL);     //一个播放函数,包含在window.h头文件中
+	//
+
+	char a;
+	cin >> a;    //输入任意字符结束播放
+}
+
+//主函数
+void main()
+{
+	automobile nison;
+	char tp[] = "yyide";
+	char ys[] = "white";
+
+	nison.set_data(tp, ys, 200000, 5, 3);  //测试设置初始数据函数
+
+	nison.horming(5);                      //测试鸣笛函数
+
+	nison.movecar(10, 3);                  //测试水平直线运动
+	nison.downcar(8);                      //测试垂直下降函数
+
+	char mp[] = "c:\\ceshiyinyue.mp3";                 //将歌曲文件.mp3放到C盘根目录下
+	nison.play_mp3(mp);                     //测试播放MP3函数
+
+	system("pause");
+}
+*/
+
+//类：圆类的设计（在一个类中使用另一个类定义的变量）
+/*
+s#include<iostream>
+using namespace std;
+
+//点类
+class Point
+{
+private:  //如果不写private程序将默认语句为私有成员
+
+	double x;  //设置点的平面坐标值
+	double y;
+
+public:
+	//设置坐标
+	void InitPoint(double, double);
+
+	//输出点的坐标
+	void Pring();
+
+	//得到坐标
+	double GetX() { return x; }
+	double GetY() { return y; }
+};
+
+//圆类
+class Circle
+{
+private:
+	
+	//圆的半径
+	double radius;
+
+	//圆的圆心,在一个类中引用了另一个类的对象
+	Point Center;
+
+public:
+	//设置圆类的数据
+	void InitCircle(double, Point);
+
+	//计算面积
+	double Area() { return 3.1415926 * radius * radius; }
+
+	//输出圆属性
+	void Print();
+
+	//得到圆属性
+	double GetRadius() { return radius; }
+	Point GetCenter() { return Center; }                     //返回的是一个类对象
+
+};
+
+//类外定义点类函数成员
+void Point::InitPoint(double a, double b)
+{
+	x = a;
+	y = b;
+}
+void Point::Pring()
+{
+	cout << '[' << x << ',' << y << ']';
+}
+
+//类外定义圆类函数成员
+void Circle::InitCircle(double r, Point p)
+{
+	radius = (r > 0 ? r : 0);   //添加一个合理性检验，如果半径为负数，那么将半径赋值为0
+	Center = p;
+}
+void Circle::Print()
+{
+	cout << "Center =";
+	Center.Pring();                  //本身center就是point类的一个对象，调用其输出函数进行输出
+	cout << "; Radius = " << radius << endl;
+}
+
+//主函数
+void main()
+{
+	Point p, center;
+
+	p.InitPoint(30, 50);
+	center.InitPoint(120, 80);
+
+	Circle c;
+	c.InitCircle(10, center);
+
+	cout << "Point p:";
+	p.Pring();             //测试点类中的显示函数
+	cout << endl;
+
+	cout << "Circle c:";             
+	c.Print();               //测试圆类中的显示函数
+
+	cout << "The center of circle c:";
+	c.GetCenter().Pring();                 //GetCenter函数返回的是Point类的对象，该对象可以使用Point类中的函数。
+	
+	cout << "\nThe area of circle c:" << c.Area() << endl;
+
+	system("pause");
+}
+*/
+
+//类实例：学生信息类(创建类的对象数组)
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+//学生信息类的定义
+class Info
+{
+
+private:
+
+	int Id;                //学号
+	char Name[20];         //姓名
+	double Programming;    //程序设计课程成绩
+	double Network;        //网络课程成绩
+	double Database;       //数据库成绩
+	double Total;          //总分
+
+public:
+
+	//初始化函数
+	void Set_info(int id, char* name, double programming, double nerwork, double database);
+	double Get_Pro() { return Programming; }           //返回程序设计成绩
+	double Get_Net() { return Network; }            //返回计算机网络课程成绩
+	double Get_Dat() { return Database; }            //返回数据库成绩
+	double Get_Tol() { return Total; }            //返回总分
+	void Show();                 //显示函数
+
+};
+
+//类外定义函数
+void Info::Set_info(int id, char* name, double programming, double network, double database)
+{
+	Id = id;
+	strcpy(Name, name);
+	Programming = programming;
+	Network = network;
+	Database = database;
+	Total = programming + network + database;
+}
+void Info::Show()
+{
+	cout << Id << "\t";
+	cout << Name << "\t";
+	cout << Programming << "\t";
+	cout << Network << "\t";
+	cout << Database << "\t";
+	cout << Total << endl;
+}
+
+//定义一个根据总成绩对学生数据排序的函数
+void sort_of_total(Info student[], int count)
+{
+	int i = 0, j = 0;
+	Info tmp;
+
+	//冒泡排序法
+	for (i=0; i < count; i = i+1)
+	{
+		for (j = count - 1; j > i; j = j - 1)
+		{
+			if (student[j].Get_Tol() > student[j-1].Get_Tol())
+			{
+				tmp = student[j];
+				student[j] = student[j - 1];
+				student[j - 1] = tmp;
+			}
+		}
+	}
+}
+
+//定义一个显示列标题的函数
+void show_of_headline()
+{
+	cout << "学号" << "\t";
+	cout << "姓名" << "\t";
+	cout << "程序设计成绩" << "\t";
+	cout << "计算机网络成绩" << "\t";
+	cout << "数据库成绩" << "\t";
+	cout << "总分" << endl;
+}
+
+//主函数
+void main()
+{
+	//const int count = 5;       //类对象数组的成员个数定义为5个，使用常量形式定义是为了方便修改
+	const int MAX_COUNT = 500;   //设置最大存储的学生人数为500,这时一种预先声明大数组的方式，仅仅是一个简单的方法
+
+	int i = 0, j = 0;           //定义两个循环变量
+
+	//定义输入的数据变量
+	int id;
+	char name[20];
+	double programming, network, database;
+
+	Info student[MAX_COUNT], tmp;
+
+	int count;               //设置一个变量存储实际的学生人数
+	cout << "请输入学生人数：";
+	cin >> count;
+	while (count > MAX_COUNT)
+	{
+		cout << "学生人数不能超过" << MAX_COUNT << "人，请重新输入：";
+		cin >> count;
+	}
+
+	cout << "请输入学生的成绩信息" << endl;
+	cout << "学号 姓名 程序设计成绩 计算机网络成绩 数据库成绩" << endl;
+
+	//数据输入
+	for (i = 0; i < count; i++)
+	{
+		cin >> id >> name >> programming >> network >> database;
+		student[i].Set_info(id, name, programming, network, database);
+	}
+
+	//按照总成绩对学生进行一个排序
+	sort_of_total(student, count);
+
+	//数据显示
+	cout << "按总分高低排名如下：" << endl;
+
+	//输出的数据头行名称
+	show_of_headline();
+
+	for (i = 0; i < count; i++)
+	{
+		student[i].Show();
+	}
+
+	//显示每门成绩都大于85分的学生名单
+	cout << "每科成绩都大于85分的学生" << endl;
+	show_of_headline();
+
+	for (i = 0; i < count; i++)
+	{
+		if (student[i].Get_Pro() > 85 && student[i].Get_Net() > 85 && student[i].Get_Dat() > 85)
+		{
+			student[i].Show();
+		}
+	}
+
+	system("pause");
+}
+*/
+
+//类：构造函数
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<time.h>
+using namespace std;
+
+//为日期类添加一个构造函数
+//定义一个日期类
+class Date
+{
+private:
+	int year, month, day;   //将存储年月日的变量私有化
+
+public:
+
+	//定义该类的构造函数
+	Date(int y = 1900, int m = 1, int d = 1)
+	{
+		year = y;
+		month = m;
+		day = d;
+	}
+
+	//取得系统的日期
+	void SetSystemDate();
+
+	//设置一个初始化年月日的函数
+	void init(int y, int m, int d);
+
+	//年月日格式显示
+	void  print_ymd() { cout << year << '.' << month << '.' << day << endl; }
+
+	//月日年格式显示
+	void print_mdn() { cout << month << '.' << day << '.' << year << endl; }
+
+	//取出年份
+	int get_year() { return year; }
+
+	//取出月份
+	int get_month() { return month; }
+
+	//取出日期
+	int get_day() { return day; }
+
+	//判断是否为闰年
+	bool IsLeapYear();
+};
+
+//类外定义日期初始化函数
+void Date::init(int y, int m, int d)
+{
+	//再初始化函数或着设置函数中应先进行合法性检验，根据情况赋值
+	if (y >= 1000 && y <= 9999)
+		year = y;
+	else
+	{
+		SetSystemDate();  //如果输入得日期格式不合理，返回系统当前得日期
+		return;
+	}
+
+	if (m >= 1 && m <= 12)
+		month = m;
+	else
+	{
+		SetSystemDate();  //如果输入得日期格式不合理，返回系统当前得日期
+		return;
+	}
+
+	if (d >= 1 && d <= 31)
+		day = d;
+	else
+	{
+		SetSystemDate();  //如果输入得日期格式不合理，返回系统当前得日期
+		return;
+	}
+}
+
+//类外定义取得系统得日期
+void Date::SetSystemDate()
+{
+	//取得系统日期
+	tm* gm;                     //tm是时间（含年月日时分秒）结构体,其包含在time.h头文件中
+	time_t t = time(NULL);      //time_t是长整型，t表示（总秒数，即从某一时刻起到现在的总秒数）
+	gm = gmtime(&t);            //gmtime()函数是根据获取的这个总秒数来计算从那个时刻起到现在经过了多少年，在最后一年中又经过了多少个月，在这个月中又经过了多少天
+
+	year = 1900 + gm->tm_year;
+	month = gm->tm_mon + 1;      //之所以在计算月份的时候加1，是因为我们根据总秒数计算出的数据是已经过去了多少个月，过去的月和现在的月相差1
+	day = gm->tm_mday;
+}
+
+//类外定义判断闰年函数
+//算法原理：四年一闰，百年不闰，四百年再闰。
+bool Date::IsLeapYear()
+{
+	if ((((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//主函数
+void main()
+{
+	Date date1;
+	date1.print_ymd();
+	date1.init(2008, 8, 23);
+	date1.print_ymd();
+
+	Date date2(2013, 6, 1);          //直接通过构造函数，初始化了对象
+	date2.print_ymd();
+
+	system("pause");
+}
+*/
+
+//类：重载构造函数
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<cstring>
+#include<stdlib.h>
+
+using namespace std;
+class Date
+{
+private:
+	int year, month, day;
+
+public:
+	Date() :year(1900), month(1), day(1) //无参构造函数
+	{
+
+	}
+
+	Date(int yy, int mm = 1, int dd = 1);      //默认参数构造函数,仅有年份变量没有赋予初值
+
+	Date(Date& d) :year(d.year), month(d.month), day(d.day) {};  //日期对象参数构造函数
+	
+
+	Date(char* ps);                                            //字符串日期构造函数
+
+	void print_ymd();
+};
+
+//类外定义函数
+void Date::print_ymd()
+{
+	cout << year << '-' << month << '-' << day << endl;
+}
+//在类外定义默认参数构造函数
+Date::Date(int yy, int mm, int dd) :year(1900), month(1), day(1)
+{
+	if (yy >= 1900 && yy <= 9999)
+	{
+		year = yy;
+	}
+	else
+	{
+		return;           //如果输入的年份不合理，将使用头部的默认值为对象初始化
+	}			 
+
+	if (mm >= 1 && mm <= 12)
+		month = mm;
+	else
+	{
+		year = 1900;               //如果输入的月份不正确，将年份恢复默认值，月份，天按照默认值赋值
+		return;
+	}
+
+	if (dd >= 1 && dd <= 31)
+		day = dd;
+	else
+	{
+		year = 1900;
+		month = 1;                //如果输入的天不正确，将年份和月份恢复默认值，天按默认值赋值
+		return;
+	}
+}
+//字符串日期构造函数
+Date::Date(char* ps) :year(1900), month(1), day(1)
+{
+	char py[5], pm[3], pd[3];
+	strncpy(py, ps, 4);                  //规定长度的字符串拷贝函数，根据输入的参数值，复制相应数量的字符
+	ps = ps + 5;
+
+	strncpy(pm, ps, 2);
+	ps = ps + 3;
+
+	strncpy(pd, ps, 2);
+
+	int yy = atoi(py), mm = atoi(pm), dd = atoi(pd);
+
+	if (yy >= 1900 && yy <= 9999) year = yy; else return;
+
+	if (mm >= 1 && mm <= 12)
+		month = mm;
+	else
+	{
+		year = 1900;
+		return;
+	}
+
+	if (dd >= 1 && dd <= 31)
+		day = dd;
+	else
+	{
+		year = 1900;
+		month = 1;                //如果输入的天不正确，将年份和月份恢复默认值，天按默认值赋值
+		return;
+	}
+}
+
+//主函数
+void main()
+{
+	Date date1;
+	cout << "date1:";             //使用无参构造函数
+	date1.print_ymd();        
+
+	Date date2(2006);
+	cout << "date2:";
+	date2.print_ymd();
+
+	Date date3(2006, 4);
+	cout << "date3:";
+	date3.print_ymd();
+
+	Date date4(2006, 4, 8);
+	cout << "date4:";
+	date4.print_ymd();
+
+	Date date5(2006, 14, 8);    //使用一个错误的月份，观察输出结果
+	cout << "date5:";
+	date5.print_ymd();
+
+	Date date6(date4);          //日期对象参数构造函数
+	cout << "date6:";
+	date6.print_ymd();
+
+	Date date7("2008-08-08");   //使用字符串日期构造函数
+	cout << "date7:";
+	date7.print_ymd();
+
+
+	system("pause");
+}
