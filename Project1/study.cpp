@@ -3661,6 +3661,7 @@ void main()
 */
 
 //类：重载构造函数
+/*
 #define _CRT_SECURE_NO_WARNINGS
 #include<iostream>
 #include<cstring>
@@ -3681,7 +3682,7 @@ public:
 	Date(int yy, int mm = 1, int dd = 1);      //默认参数构造函数,仅有年份变量没有赋予初值
 
 	Date(Date& d) :year(d.year), month(d.month), day(d.day) {};  //日期对象参数构造函数
-	
+
 
 	Date(char* ps);                                            //字符串日期构造函数
 
@@ -3703,7 +3704,149 @@ Date::Date(int yy, int mm, int dd) :year(1900), month(1), day(1)
 	else
 	{
 		return;           //如果输入的年份不合理，将使用头部的默认值为对象初始化
-	}			 
+	}
+
+	if (mm >= 1 && mm <= 12)
+		month = mm;
+	else
+	{
+		year = 1900;               //如果输入的月份不正确，将年份恢复默认值，月份，天按照默认值赋值
+		return;
+	}
+
+	if (dd >= 1 && dd <= 31)
+		day = dd;
+	else
+	{
+		year = 1900;
+		month = 1;                //如果输入的天不正确，将年份和月份恢复默认值，天按默认值赋值
+		return;
+	}
+}
+//字符串日期构造函数
+Date::Date(char* ps) :year(1900), month(1), day(1)
+{
+	char py[5], pm[3], pd[3];
+	strncpy(py, ps, 4);                  //规定长度的字符串拷贝函数，根据输入的参数值，复制相应数量的字符
+	ps = ps + 5;
+
+	strncpy(pm, ps, 2);
+	ps = ps + 3;
+
+	strncpy(pd, ps, 2);
+
+	int yy = atoi(py), mm = atoi(pm), dd = atoi(pd);
+
+	if (yy >= 1900 && yy <= 9999) year = yy; else return;
+
+	if (mm >= 1 && mm <= 12)
+		month = mm;
+	else
+	{
+		year = 1900;
+		return;
+	}
+
+	if (dd >= 1 && dd <= 31)
+		day = dd;
+	else
+	{
+		year = 1900;
+		month = 1;                //如果输入的天不正确，将年份和月份恢复默认值，天按默认值赋值
+		return;
+	}
+}
+//主函数
+void main()
+{
+	Date date1;
+	cout << "date1:";             //使用无参构造函数
+	date1.print_ymd();
+
+	Date date2(2006);
+	cout << "date2:";
+	date2.print_ymd();
+
+	Date date3(2006, 4);
+	cout << "date3:";
+	date3.print_ymd();
+
+	Date date4(2006, 4, 8);
+	cout << "date4:";
+	date4.print_ymd();
+
+	Date date5(2006, 14, 8);    //使用一个错误的月份，观察输出结果
+	cout << "date5:";
+	date5.print_ymd();
+
+	Date date6(date4);          //日期对象参数构造函数
+	cout << "date6:";
+	date6.print_ymd();
+
+	Date date7("2008-08-08");   //使用字符串日期构造函数
+	cout << "date7:";
+	date7.print_ymd();
+
+
+	system("pause");
+}
+*/
+
+//类：析构函数
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<cstring>
+#include<stdlib.h>
+
+using namespace std;
+
+//定义类
+class Date
+{
+private:
+	int year, month, day;
+
+public:
+	Date() :year(1900), month(1), day(1)         //无参构造函数
+	{
+
+	};
+
+	Date(int yy, int mm = 1, int dd = 1);      //默认参数构造函数,仅有年份变量没有赋予初值
+
+	Date(Date& d) :year(d.year), month(d.month), day(d.day) {};  //日期对象参数构造函数
+
+
+	Date(char* ps);                                            //字符串日期构造函数
+
+	void print_ymd();
+
+	~Date()  //析构函数定义
+	{
+		static int i = 1;
+
+		cout << "撤销日期对象" << i << "\n";
+		i++;
+	};
+};
+
+//类外定义函数
+void Date::print_ymd()
+{
+	cout << year << '-' << month << '-' << day << endl;
+}
+//在类外定义默认参数构造函数
+Date::Date(int yy, int mm, int dd) :year(1900), month(1), day(1)
+{
+	if (yy >= 1900 && yy <= 9999)
+	{
+		year = yy;
+	}
+	else
+	{
+		return;           //如果输入的年份不合理，将使用头部的默认值为对象初始化
+	}
 
 	if (mm >= 1 && mm <= 12)
 		month = mm;
@@ -3759,34 +3902,738 @@ Date::Date(char* ps) :year(1900), month(1), day(1)
 //主函数
 void main()
 {
-	Date date1;
-	cout << "date1:";             //使用无参构造函数
-	date1.print_ymd();        
 
-	Date date2(2006);
-	cout << "date2:";
-	date2.print_ymd();
+	{   //在主代码中添加一对大括号，这样对象会在暂停前超出作用域而析构，可以使析构函数显示出来，如果不添加该大括号，在暂停结束后析构，因程序运行速度太快而无法被观察到
+		Date date1;
+		cout << "date1:";             //使用无参构造函数
+		date1.print_ymd();
 
-	Date date3(2006, 4);
-	cout << "date3:";
-	date3.print_ymd();
+		Date date2(2006);
+		cout << "date2:";
+		date2.print_ymd();
 
-	Date date4(2006, 4, 8);
-	cout << "date4:";
-	date4.print_ymd();
+		Date date3(2006, 4);
+		cout << "date3:";
+		date3.print_ymd();
 
-	Date date5(2006, 14, 8);    //使用一个错误的月份，观察输出结果
-	cout << "date5:";
-	date5.print_ymd();
+		Date date4(2006, 4, 8);
+		cout << "date4:";
+		date4.print_ymd();
 
-	Date date6(date4);          //日期对象参数构造函数
-	cout << "date6:";
-	date6.print_ymd();
+		Date date5(2006, 14, 8);    //使用一个错误的月份，观察输出结果
+		cout << "date5:";
+		date5.print_ymd();
 
-	Date date7("2008-08-08");   //使用字符串日期构造函数
-	cout << "date7:";
-	date7.print_ymd();
+		Date date6(date4);          //日期对象参数构造函数
+		cout << "date6:";
+		date6.print_ymd();
+
+		Date date7("2008-08-08");   //使用字符串日期构造函数
+		cout << "date7:";
+		date7.print_ymd();
+	}
 
 
 	system("pause");
 }
+*/
+
+//类实例：整数翻译函数
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+class Robot
+{
+private:
+
+	char name[20];   //机器人姓名
+	char type[20];   //机器人型号
+
+public:
+
+	Robot()    //构造函数
+	{
+		strcpy(name, "XXXXXX");
+		strcpy(type, "xxxxxx");
+	}
+
+	//定义一个设置函数
+	void set(char n[], char t[])
+	{
+		strcpy(name, n);
+		strcpy(type, t);
+	}
+
+	void out(int a);  //英文中每三位数读法相同，所以定义out函数翻译小于1000的数
+
+	void tran_int(int n);   //将1至1999999999的整数翻译成英文句子
+
+	~Robot() {};    //析构函数
+};
+
+//定义两个全局字符指针数组，存取所需的单词
+//num1中为1到19，空出了0，所以可以直接用num1[n]调用，得到n对应的单词
+static char* num1[] =
+{
+	"", "one ", "two ", "three ", "four ", "five ", "six ", "seven ", "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ",
+	"fourteen ", "fifteen ", "sixteen ", "seventeen ", "eighteen ", "nineteen "
+};
+
+//num10中为20-90，空出了0和1，所以可以直接用num10[n/10]调用，得到n对应单词
+static char* num10[] =
+{
+	"", "", "twenty ", "thirty ", "forty ", "fifty ", "sixty ", "seventy ", "eighty ", "ninety "
+};
+
+//类外定义的小于1000整数翻译函数
+void Robot::out(int a)
+{
+	int b = a % 100;
+	//若百位数不为0，输出百位数加hundred，若此时十位个位均为0，不加and
+	if (a / 100 != 0)
+	{
+		cout << num1[a / 100] << "hundred ";
+		if (b != 0)
+			cout << " and ";
+	}
+	//当后两位在20以内，直接调用num1[n],输出
+	if (b < 20)
+	{
+		cout << num1[b];
+	}
+	//当b大于20时
+	else
+	{
+		//先调用num10,输出十位数
+		cout << num10[b / 10];
+		//个位不为0时应输出个位数
+		if (b % 10 != 0)
+			cout << "\b-" << num1[b % 10];
+	}
+}
+
+//整数翻译函数
+void Robot::tran_int(int n)
+{
+	if (n > 1999999999)
+		cout << "dev c++平台无法处理大于1999999999位的数字" << endl;
+	else
+	{
+		//三位三位取走，存入abcd四个变量中
+		int a = n / 1000000000, b = (n % 1000000000) / 1000000, c = (n % 1000000) / 1000, d = n % 1000;
+		//不等于0时，输出并加上millon或thousand
+		if (a != 0)
+		{
+			out(a);
+			cout << "billion ";
+		}
+		if (b != 0)
+		{
+			out(b);
+			cout << "million ";
+		}
+		if (c != 0)
+		{
+			out(c);
+			cout << "thousand ";
+		}
+		if (d != 0)
+		{
+			//根据英文语法规则，最后两位前一定有and
+			if (d < 100 && (a != 0 || b != 0 || c != 0))
+				cout << " and ";
+			out(d);
+		}
+	}
+	cout << endl;
+}
+
+//主函数:测试函数
+void main()
+{
+	int n;
+	cout << "请输入n: ";
+	cin >> n;
+	cout << n << endl;
+
+	Robot brown;
+	brown.tran_int(n);
+
+	system("pause");
+}
+*/
+
+//类实例：整数翻译（析构函数的实际意义）
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+//定义两个全局字符指针数组，存取所需的单词
+//num1中为1到19，空出了0，所以可以直接用num1[n]调用，得到n对应的单词
+static char* num1[] =
+{
+	"", "one ", "two ", "three ", "four ", "five ", "six ", "seven ", "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ",
+	"fourteen ", "fifteen ", "sixteen ", "seventeen ", "eighteen ", "nineteen "
+};
+
+//num10中为20-90，空出了0和1，所以可以直接用num10[n/10]调用，得到n对应单词
+static char* num10[] =
+{
+	"", "", "twenty ", "thirty ", "forty ", "fifty ", "sixty ", "seventy ", "eighty ", "ninety "
+};
+
+//定义机器人类
+class Robot
+{
+private:
+
+	char name[20];   //机器人姓名
+	char type[20];   //机器人型号
+
+	//对原有的机器人类进行了修改
+	int num;        //待翻译的整数
+	char* ps;        //指向英文字符串
+
+public:
+
+	Robot()    //构造函数
+	{
+		strcpy(name, "XXXXXX");
+		strcpy(type, "xxxxxx");
+
+		//对原有构造函数进行修改
+		num = 0;
+		ps = new char[5];
+		strcpy(ps, "zero");
+	}
+
+	//定义一个设置/修改函数
+	void set(char n[], char t[], int m);
+
+	char* out(int a);  //英文中每三位数读法相同，所以定义out函数翻译小于1000的数。将返回类型修改为了字符串指针
+
+	char* tran_int(int n);   //将1至1999999999的整数翻译成英文句子。将返回类型修改为了字符串指针
+
+	void print_num();       //新增输出整数及其英文句子
+
+	~Robot()
+	{
+		cout << "堆区中" << strlen(ps) + 1 << "个字节空间释放收回" << endl;
+		delete[] ps;
+
+	};    //析构函数，释放构造函数和set函数中动态申请的数组
+};
+
+//类外定义设置函数
+void Robot::set(char n[], char t[], int m)
+{
+	strcpy(name, n);
+	strcpy(type, t);
+
+	//对原有的设置/修改函数进行修改
+	if (num == m)  //待翻译的整数没有变
+		return;     //直接从设置函数返回
+	else
+	{
+		num = m;
+		delete[] ps; //删除已有的英文句子
+	}
+	if (num > 0)
+	{
+		char* tp = tran_int(num);              //定义一个字符串指针，用于指向翻译结果
+		ps = new char[strlen(tp) + 1];         //重新动态申请字符串数组
+		strcpy(ps, tp);
+		delete[] tp;                           //释放在tran_int中动态申请的空间
+	}
+	else if (num == 0)
+	{
+		ps = new char[5];
+		strcpy(ps, "zero");
+	}
+	else
+	{
+		ps = new char[13];
+		strcpy(ps, "负数不能翻译");
+	}
+}
+
+//类外定义的小于1000整数翻译函数
+char* Robot::out(int a)
+{
+	char k[1000] = "";          //定义一个字符串数组，用于存储返回结果
+
+	int b = a % 100;
+	//若百位数不为0，输出百位数加hundred，若此时十位个位均为0，不加and
+	if (a / 100 != 0)
+	{
+		//cout << num1[a / 100] << "hundred ";
+		strcat(k, num1[a / 100]);     //strcat函数将第二个参数连接到第一个参数的末尾
+		strcat(k, "hundred ");
+		if (b != 0)
+			//cout << " and ";
+			strcat(k, "and ");
+	}
+
+	//当后两位在20以内，直接调用num1[n],输出
+	if (b < 20)
+	{
+		//cout << num1[b];
+		strcat(k, num1[b]);
+	}
+	//当b大于20时
+	else
+	{
+		//先调用num10,输出十位数
+		//cout << num10[b / 10];
+		strcat(k, num10[b / 10]);
+
+		//个位不为0时应输出个位数
+		if (b % 10 != 0)
+		{
+			//cout << "\b-" << num1[b % 10];
+			strcat(k, "\b-");
+			strcat(k, num1[b % 10]);
+		}
+	}
+	char* p = new char[strlen(k) + 1];   //在该函数中动态申请了一个字符串数组，记得在调用完后释放空间
+	strcpy(p, k);
+	return p;
+}
+
+//整数翻译函数
+char* Robot::tran_int(int n)
+{
+	char* p;               //用于存放调用out函数的返回值
+	char kk[1000] = "";    //用于存放翻译结果
+
+	if (n > 1999999999)
+	{
+		cout << "dev c++平台无法处理大于1999999999位的数字!" << endl;
+		strcpy(kk, "dev c++平台无法处理大于1999999999位的数字!\n");
+	}
+	else
+	{
+		//三位三位取走，存入abcd四个变量中
+		int a = n / 1000000000, b = (n % 1000000000) / 1000000, c = (n % 1000000) / 1000, d = n % 1000;
+		//不等于0时，输出并加上billion，million或thousand
+		if (a != 0)
+		{
+			p = out(a);
+			//cout << "billion ";
+			strcpy(kk, p);
+			strcat(kk, "billion ");
+			delete[] p;     //释放在out函数中动态申请的空间
+		}
+		if (b != 0)
+		{
+			p = out(b);
+			//cout << "million ";
+			strcat(kk, p);                //此处不能继续使用字符串复制函数，应使用字符串拼接函数。
+			strcat(kk, "million ");
+			delete[] p;    //释放在out函数中动态申请的空间
+		}
+		if (c != 0)
+		{
+			p = out(c);
+			//cout << "thousand ";
+			strcat(kk, p);                    //此处不能继续使用字符串复制函数，应使用字符串拼接函数。
+			strcat(kk, "thousand ");
+			delete[] p;    //释放在out函数中动态申请的空间
+		}
+		if (d != 0)
+		{
+			//根据英文语法规则，最后两位前一定有and
+			if (d < 100 && (a != 0 || b != 0 || c != 0))
+				//cout << " and ";
+				strcat(kk, "and ");
+			p = out(d);
+			strcat(kk, p);
+			delete[] p;   //释放在out函数中动态申请的空间
+		}
+	}
+	//cout << endl;
+
+	p = new char[strlen(kk) + 1];   //申请的动态数组记得在使用完后，将其对应的空间释放
+	strcpy(p, kk);
+	return p;
+}
+
+//类外定义输出函数
+void Robot::print_num()
+{
+	cout << "整数为： " << num << endl;
+	if (ps == NULL)
+		cout << "zero" << endl;
+	else
+		cout << "翻译结果为：" << ps << endl;
+}
+
+//主函数:测试函数
+void main()
+{
+	{//在主函数中内嵌一个作用域，为了方便析构函数的显示
+		int n;
+		cout << "请输入n: ";
+		cin >> n;
+		//cout << n << endl;
+
+		Robot brown;
+		brown.set("brown", "800#", n);
+		brown.print_num();
+	}
+
+	system("pause");
+}
+*/
+
+//类实例：Person类的定义
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+class Person
+{
+private:
+
+	char Name[9];      //之所以将名字字符数组的长度设置为9，是因为一般汉族人名字的长度不会超过四个字。
+	char Sex;
+	int Age;
+	char Pid[19];
+	char* Addr;
+
+public:
+
+	//构造函数
+	Person()
+	{
+		strcpy(Name, "XXX");
+		Age = 0;
+		Sex = 'x';
+		strcpy(Pid, "xxxxxxxxxxxxxxxxxx");
+		Addr = NULL;
+	}
+
+	//带有参数的构造函数
+	Person(char* N, int A, char S, char* P, char *Ad)
+	{
+		strcpy(Name, N);
+		Age = A;
+		Sex = S;
+		strcpy(Pid, P);
+
+		//使用动态数组的形式存储地址
+		int l = strlen(Ad);
+		Addr = new char[l+1];
+		strcpy(Addr, Ad);
+	}
+
+	//析构函数
+	~Person()
+	{
+		cout << "Now destroying Person" << Name << endl;
+		if (Addr != NULL) delete[] Addr;                 //在析构函数中释放申请的动态空间
+	}
+
+	//设置函数，登记
+	void Register(char* name, int age, char sex, char* p, char* Ad);
+
+	//显示信息函数
+	void ShowMe();
+};
+
+//类外定义登记函数，即为类中数据的设置/修改函数
+void Person::Register(char* name, int age, char sex, char* p, char* Ad)
+{
+	strcpy(Name, name);
+	Age = age;
+	Sex = sex;
+
+	strcpy(Pid, p);
+
+	if (Addr != NULL) delete[] Addr;    //应为在有参的构造函数中，已经动态申请空间了，如果要修改其值，应该先释放原有空间再申请新的空间由于存储新的住址
+	//使用动态数组的形式存储地址
+	int l = strlen(Ad);
+	Addr = new char[l + 1];
+	strcpy(Addr, Ad);
+}
+
+//类外定义显示函数
+void Person::ShowMe()
+{
+	cout << Name << "\t" << Age << "\t" << Sex << "\t" << Pid << "\t";
+	if (Addr != NULL) cout << Addr << endl;    //因为使用无参构造函数定义的住址其为空，如果没有为其赋值，则不输出
+	else cout << endl;
+}
+
+//主函数
+void main()
+{
+	{//在主函数中内嵌一个作用域，为了方便析构函数的显示
+		Person person1;
+		Person person2("张三", 19, 'm', "610103199409192839", "中国西安市咸宁路29号");
+		Person person3;
+
+		cout << "Person1: ";
+		person1.ShowMe();
+
+		cout << "Person2: ";
+		person2.ShowMe();
+
+		person3.Register("李四", 29, 'w', "610103198409192493", "中国上海市华山北路1845号");
+		cout << "Person3: ";
+		person3.ShowMe();
+
+		person2.Register("赵武", 29, 'w', "610103198409152127", "中国新疆乌鲁木齐市王家沟12号");
+		cout << "Person2: ";
+		person2.ShowMe();
+	}
+
+	system("pause");
+}
+*/
+
+//类：对象与指针
+//日期类及应用
+/*
+#include<iostream>
+
+using namespace std;
+
+class Date
+{
+
+public:
+	int year, month, day;
+	void init(int y, int m, int d);
+	void print_ymd();
+};
+//类外定义初始化函数
+void Date::init(int y, int m, int d)
+{
+	year = y;  month = m; day = d;
+}
+//类外定义显示函数
+void Date::print_ymd()
+{
+	cout << year << "-" << month << "-" << day << endl;
+}
+//主函数
+void main()
+{
+	Date date1;
+
+	//定义对象指针，将其指向刚刚声明的对象
+	Date* p1 = &date1;
+	p1->init(2020, 3, 15);    //通过->的形式调用对象的功能函数。
+	p1->print_ymd();
+
+	int* p2 = &date1.year;   //使用整型指针获取日期对象中的年份数据
+	cout << *p2 << endl;
+
+	void (Date:: * p3)(int, int, int);    //在指针章节，我们学习过指向函数的指针，此格式介绍的是指向类中成员函数的指针
+	void (Date:: * p4)();
+
+	p3 = &Date::init;                     //将指向类成员函数的指针与相应的类成员函数匹配起来
+	p4 = &Date::print_ymd;
+
+	(date1.*p3)(2020, 8, 23);             //指向类成员函数的指针的使用
+	(date1.*p4)();
+
+	system("pause");
+}
+*/
+//Person类及应用
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+class Person
+{
+private:
+
+	char Name[9];      //之所以将名字字符数组的长度设置为9，是因为一般汉族人名字的长度不会超过四个字。
+	char Sex;
+	int Age;
+	//char Pid[19];
+	//char* Addr;
+
+public:
+
+	//构造函数
+	Person()
+	{
+		strcpy(Name, "XXX");
+		Age = 0;
+		Sex = 'x';
+		//strcpy(Pid, "xxxxxxxxxxxxxxxxxx");
+		//Addr = NULL;
+	}
+
+	//带有参数的构造函数
+	Person(char* N, int A, char S)//, char* P, char* Ad)
+	{
+		strcpy(Name, N);
+		Age = A;
+		Sex = S;
+
+#if 0
+		strcpy(Pid, P);
+
+		//使用动态数组的形式存储地址
+		int l = strlen(Ad);
+		Addr = new char[l + 1];
+		strcpy(Addr, Ad);
+#endif // 0 在该测试中将Person类简单化
+	}
+
+	//析构函数
+	~Person()
+	{
+		cout << "Now destroying Person" << Name << endl;
+		//if (Addr != NULL) delete[] Addr;                 //在析构函数中释放申请的动态空间
+	}
+
+	//设置函数，登记
+	void Register(char* name, int age, char sex);//, char* p, char* Ad);
+
+	//显示信息函数
+	void ShowMe();
+};
+
+//类外定义登记函数，即为类中数据的设置/修改函数
+void Person::Register(char* name, int age, char sex)//, char* p, char* Ad)
+{
+	strcpy(Name, name);
+	Age = age;
+	Sex = sex;
+
+#if 0
+	strcpy(Pid, p);
+
+	if (Addr != NULL) delete[] Addr;    //应为在有参的构造函数中，已经动态申请空间了，如果要修改其值，应该先释放原有空间再申请新的空间由于存储新的住址
+	//使用动态数组的形式存储地址
+	int l = strlen(Ad);
+	Addr = new char[l + 1];
+	strcpy(Addr, Ad);
+#endif // 0 在该测试中将Person类简单化
+
+
+}
+
+//类外定义显示函数
+void Person::ShowMe()
+{
+	cout << Name << "\t" << Age << "\t" << Sex << "\t";
+#if 0
+	cout << Pid << "\t";
+	if (Addr != NULL) cout << Addr << endl;    //因为使用无参构造函数定义的住址其为空，如果没有为其赋值，则不输出
+	else cout << endl;
+#endif // 0 在该测试中将Person类简单化
+	cout << endl;
+}
+
+//主函数
+void main()
+{
+	Person* p1, * p2;
+
+	p1 = new Person;              //动态生成一个指向对象的指针
+	cout << "Person1: \t";
+	p1->ShowMe();
+	p1->Register("张三", 19, 'm');
+	cout << "Person1: \t";
+	p1->ShowMe();
+
+	p2 = new Person;
+	cout << "Person2: \t";
+	p2->ShowMe();
+
+	*p2 = *p1;                    //对象之间赋值
+	cout << "Person2: \t";
+	p2->ShowMe();
+
+	delete p1;  //释放指针指向对象所占的空间
+	delete p2;
+
+	system("pause");
+}
+*/
+
+//类：this指针的使用
+//this指针的理解
+/*
+#include<iostream>
+
+using namespace std;
+
+class Test
+{
+
+private:
+	int x;
+
+public:
+	Test(int = 0);
+	void print();
+};
+//类外定义成员函数
+Test::Test(int a) { x = a; };
+//类外定义成员函数
+void Test::print()
+{
+	cout << "类中成员数据x的显示" << "    x = " << x << endl;
+
+	int x=22;
+	cout << "输出函数中定义的局部变量x的显示" << "    x = " << x << endl;   //该行测试代码是为了与下面this指针调用类中数据形成对比，遵循了局部优先原则
+
+	cout << "this->x = " << this->x << endl;
+	cout << "(*this).x = " << (*this).x << endl;
+}
+
+//主函数
+void main()
+{
+	Test testObject(12);
+	testObject.print();
+
+	system("pause");
+}
+*/
+//this指针的使用方法
+#include<iostream>
+
+using namespace std;
+
+class Time
+{
+private:
+	int hour, minute, secound;
+
+public:
+	void set(int hour, int mintue, int secound)
+	{
+		//下面程序，如果没有this->，形参赋给形参
+		this->hour = hour;
+		this->minute = mintue;
+		this->secound = secound;
+	}
+
+	void print()
+	{
+		cout << hour << ':' << minute << ':' << secound << endl;
+	}
+};
+
