@@ -2916,7 +2916,7 @@ void Fraction::Set(int aa, int bb)
 //显示分数
 void Fraction::show()
 {
-	cout << a << "/" << b;
+	cout << a << "/" << b << endl;
 }
 
 //分数相加，本类对象加u，该处需要仔细的琢磨，返回的是类，参数也是同类的一个实体
@@ -2925,6 +2925,7 @@ Fraction Fraction::add(Fraction u)
 	int tmp;
 	Fraction v;
 
+#if 0
 	v.a = a * u.b + b * u.a;   //计算分子
 	v.b = b * u.b;              //计算分母
 
@@ -2934,6 +2935,21 @@ Fraction Fraction::add(Fraction u)
 	v.b = v.b / tmp;           //约去公约数
 
 	return v;                 //返回结果
+#endif // 0
+
+#if 1
+	a = a * u.b + b * u.a;   //计算分子
+	b = b * u.b;              //计算分母
+
+	tmp = divisor(a, b);   //计算分子、分母的公约数
+
+	a = a / tmp;           //约去公约数
+	b = b / tmp;           //约去公约数
+
+	return *this;                 //返回结果
+#endif // 0 使用this指针,无需在函数中新建分数对象，直接修改参与运算的主对象
+
+
 }
 
 //计算最大公约数
@@ -2973,6 +2989,7 @@ void main()
 {
 	Real f1, f2, f3;   //声明类的三个对象
 	int a, b, c, d;
+	Fraction f4;       //用于存储分数相加的结果
 
 	cout << "\n请分别输入两个分数的分子与分母，分母为0时退出\n";
 
@@ -2982,8 +2999,17 @@ void main()
 	f1.Set(a, b);
 	f2.Set(c, d);
 
+	cout << "第一个分数f1为：";
 	f1.show_real();
+	cout << "第二个分数f2为：";
 	f2.show_real();
+
+	f4 = f1.add(f2);   //测试Fraction类的分数相加功能
+	cout << "两分数相加的结果f4为：";
+	f4.show();
+
+	cout << "显示参与运算的对象f1，观察其是否发生变化：";
+	f1.show_real();
 
 	system("pause");
 }
@@ -4613,6 +4639,7 @@ void main()
 }
 */
 //this指针的使用方法
+/*
 #include<iostream>
 
 using namespace std;
@@ -4625,7 +4652,7 @@ private:
 public:
 	void set(int hour, int mintue, int secound)
 	{
-		//下面程序，如果没有this->，形参赋给形参
+		//下面程序，如果没有使用this->，形参赋给形参
 		this->hour = hour;
 		this->minute = mintue;
 		this->secound = secound;
@@ -4636,4 +4663,426 @@ public:
 		cout << hour << ':' << minute << ':' << secound << endl;
 	}
 };
+*/
 
+//类实例
+/*
+#include<iostream>
+#include<cmath>
+
+using namespace std;
+
+class Date
+{
+private:
+
+	int year, month, day;
+
+	//一些只在类内部使用，不公开的函数，我们为了安全起见将其设为私有的函数
+	void IncDay();                            //日期增加一天函数
+	int DayCalc();                            //计算指定日期距离基准日期的天数，基准日期为1900-1-1
+
+public:
+
+	Date(int y = 1900, int m = 1, int d = 1);  //构造函数
+	void SetDate(int yy, int mm, int dd);      //日期设置
+	bool IsLeapYear();                         //判断是否闰年
+	void print_ymd();                          //按年月日输出
+	void print_mdy();                          //按月日年输出
+
+	//扩展
+	void AddDay(int adddays);                   //日期增加任意天数
+	bool IsEndofMonth();                      //判断是否是月末
+
+	int Daysof2Date(Date ymd);               //计算两个指定日期之间间隔的天数
+};
+
+//类外定义函数
+Date::Date(int y, int m, int d)
+{
+	SetDate(y, m, d);
+}
+
+void Date::SetDate(int yy, int mm, int dd)
+{
+	//如果输入的日期不合理，将使用默认值代替，年份默认值为1900，月份默认值为1，天数的默认值为1
+
+	year = (yy >= 1900 && yy <= 2100) ? yy : 1900;  //年份有效性判断
+	month = (mm >= 1 && mm <= 12) ? mm : 1;         //月份有效性判断
+
+	switch(month)  //天数的有效性判断
+	{
+		case 4:     //4，6，9，11月每月只有30天，
+		case 6:
+		case 9:
+		case 11:    day = (dd >= 1 && dd <= 30) ? dd : 1; break;
+
+		case 2:   //2月天数判断
+			if (IsLeapYear())   //判断是否是闰年，闰年2月有29天，非闰年2月有28天
+				day = (dd >= 1 && dd <= 29) ? dd : 1;
+			else
+				day = (dd >= 1 && dd <= 28) ? dd : 1;
+			break;
+
+		default :   //大月天数判断
+			day = (dd >= 1 && dd <= 31) ? dd : 1;
+
+	}
+}
+
+bool Date::IsLeapYear()
+{
+	if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+		return true;    //闰年
+	else
+		return false;   //非闰年
+}
+
+void Date::print_ymd()
+{
+	cout << year << '-' << month << '-' << day << endl;
+}
+
+void Date::print_mdy()
+{
+
+	char* monthName[12] = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+	//欧美国家输出日期格式是：月份的英文表示 天数，年份。
+	cout << monthName[month-1] << ' ' << day << ',' << year << endl;
+}
+//日期增加一天
+void Date::IncDay()
+{
+	if (IsEndofMonth())  //判断是否是月末，如果是月末，月份，年份需要联动更新
+	{
+		if (month == 12)   //如果是12月，年份，月份需要联动更新
+		{
+			day = 1;
+			month = 1;
+			year++;
+		}
+		else               //非12月，月份需要联动更新
+		{
+			day = 1;
+			month++;
+		}
+	}
+	else
+		day++;
+}
+int Date::DayCalc()
+{
+	int days;
+	int yy = year - 1900;    //当前日期距离基准年份之间的差值
+
+	days = yy * 365;       //不计闰年的天数
+
+	if (yy)
+		days += (yy - 1) / 4;     //每逢闰年闰年增加一天
+
+	switch (month)             //当前日期已过去月份的天数
+	{//switch 选择判断，如果不在case n：的代码段中加入break关键字，程序会依次往下运行
+	case 12: days = days + 30;   //因为11月为30天，如果当前日期为12月，那表明该年已经过去了11个月，应将这过去月份的总天数加上
+	case 11: days = days + 31;
+	case 10: days = days + 30;
+	case 9: days = days + 31;
+	case 8: days = days + 30;
+	case 7: days = days + 31;
+	case 6: days = days + 30;
+	case 5: days = days + 31;
+	case 4: days = days + 30;
+	case 3:
+		if (IsLeapYear())
+			days = days + 29;
+		else
+			days = days + 28;
+	case 2: days = days + 31;
+
+	default: break;
+	}
+	days = days + day;    //将指定日期对应的天数，归入总天数计算中
+	return days;
+}
+//日期增加任意天数
+void Date::AddDay(int adddays)
+{
+	for (int i = 0; i <= adddays; i++)
+		IncDay();
+}
+//判断是否是月末
+bool Date::IsEndofMonth()
+{
+	switch (month)
+	{
+	case 4:
+	case 6:
+	case 9:
+	case 11:  return day == 30;
+	case 2:
+		if (IsLeapYear())
+			return day == 29;
+		else
+			return day == 28;
+
+	default: return day == 31;
+	}
+}
+int Date::Daysof2Date(Date ymd)
+{
+	int days;
+	days = abs(DayCalc() - ymd.DayCalc());   //使用abs函数计算绝对值
+	return days;
+}
+//主函数
+void main()
+{
+#if 0
+	Date date1;
+	date1.SetDate(2015, 5, 1);
+	cout << "the current date is: " << endl;
+	date1.print_mdy();
+	date1.print_ymd();
+
+	//使用闰年测试2月天数
+	date1.SetDate(2020, 2, 29);
+	cout << "the current date is: " << endl;
+	date1.print_ymd();
+	date1.print_mdy();
+#endif // 0
+
+	Date date1;
+
+	date1.SetDate(2013, 1, 27);
+	cout << "the current date is : " << endl;
+
+	cout << "按照年-月-日格式输出：";
+	date1.print_ymd();
+
+	cout << "按照月 日,年格式输出：";
+	date1.print_mdy();
+
+	date1.AddDay(100);
+	cout << "After 100 days, the date is : ";
+	date1.print_ymd();
+
+	cout << "And befor " << date1.Daysof2Date(Date(2008, 8, 24)) << " days, the BeiJing Olympic Game had been over." << endl;    //Daysof2Date函数中使用了一个临时对象，没有声明直接使用了
+
+	system("pause");
+}
+
+*/
+
+//类：继承
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<windows.h>
+
+using namespace std;
+
+//定义两个全局字符指针数组，存取所需的单词
+//num1中为1到19，空出了0，所以可以直接用num1[n]调用，得到n对应的单词
+static char* num1[] =
+{
+	"", "one ", "two ", "three ", "four ", "five ", "six ", "seven ", "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ",
+	"fourteen ", "fifteen ", "sixteen ", "seventeen ", "eighteen ", "nineteen "
+};
+
+//num10中为20-90，空出了0和1，所以可以直接用num10[n/10]调用，得到n对应单词
+static char* num10[] =
+{
+	"", "", "twenty ", "thirty ", "forty ", "fifty ", "sixty ", "seventy ", "eighty ", "ninety "
+};
+
+class Person
+{
+
+private:
+
+	char* name;     //人名
+	char sex;       //性别
+	char pid[19];    //身份证号码
+	int weight;      //体重
+	int high;        //身高
+
+public:
+	
+	Person();   //无参构造函数
+	Person(char* n, char s, char* p, int w, int h);   //有参构造函数
+
+	void change_data(char* n, char s, char* p, int w, int h);    //修改数据
+	void walking(int k, int v);                                 //以v速度行走k步
+	void hearing(char* sentence);                               //将字符串小写变大写，大写变小写输出
+	void speek(int n);                                         //说出整数num的英文句子
+	void writing();                                            //在屏幕上画出汉字“王”
+	void print();                                              //输出人的属性值
+	void out(int a);                                           //翻译小于1000的整数
+
+	~Person();                                                 //析构函数
+};
+
+Person::Person()
+{
+	name = new char[4]{ "xxx" };
+	sex = 'x';
+	strcpy(pid, "xxxxxxxxxxxxxxxxxx");
+	weight = 0;
+	high = 0;
+}
+
+Person::Person(char* n, char s, char* p, int w, int h)
+{
+	cout << n;
+	cout << strlen(n) << endl;
+
+	name = new char[strlen(n) + 1];    //申请一处空间来存放输入姓名
+	strcpy(name, n);
+
+	sex = s;
+	strcpy(pid, p);
+	weight = w;
+	high = h;
+}
+
+void Person::change_data(char* n, char s, char* p, int w, int h)
+{
+	delete[] name;   //先将原有的存储姓名的空间释放掉
+	name = new char[strlen(n) + 1];
+	strcpy(name, n);
+	sex = s;
+	strcpy(pid, p);
+	weight = w;
+	high = h;
+}
+
+void Person::walking(int k, int v)
+{
+	cout << "\n" << name << "水平行走" << k << "步" << endl;
+	for (int i = 0; i < k; i++)
+	{
+		cout << ' ' << "o_o";
+		Sleep(1000 / v);               //Sleep函数的参数是以毫秒为单位的，其属于windows头文件
+		cout << "\b\b\b";
+	}
+}
+
+void Person::hearing(char* sentence)
+{
+	cout << endl << sentence << endl;            //显示输入的字符串
+	char* p = new char[strlen(sentence) + 1];    //动态申请一处空间来存储输入的字符串 
+	strcpy(p, sentence);
+	char* pp = p;             //将字符串的首地址转存在另一个指针内，方便修改后读取字符串
+	while (*p)
+	{
+		if (*p >= 'a' && *p <= 'z')
+			*p = 'A' + (*p - 'a' + 0);           //小写变大写
+		else if (*p >= 'A' && *p <= 'z')
+			*p = 'a' + (*p - 'A');              //大写变小写
+
+		p++;                                    //将指针向后移动一位，指向字符串中的下一个字符
+	}
+
+	cout << pp << endl;
+	delete[] pp;                 //释放申请的字符数组空间，之所以不是释放p指针是因为，p在处理过程中已经变换了地址，其并不是指向申请空间的首地址
+}
+
+void Person::speek(int n)
+{
+	if (n > 1999999999)
+		cout << "dev c++平台无法处理大于1999999999位的数字" << endl;
+	else
+	{
+		//三位三位取走，存入abcd四个变量中
+		int a = n / 1000000000, b = (n % 1000000000) / 1000000, c = (n % 1000000) / 1000, d = n % 1000;
+		//不等于0时，输出并加上millon或thousand
+		if (a != 0)
+		{
+			out(a);
+			cout << "billion ";
+		}
+		if (b != 0)
+		{
+			out(b);
+			cout << "million ";
+		}
+		if (c != 0)
+		{
+			out(c);
+			cout << "thousand ";
+		}
+		if (d != 0)
+		{
+			//根据英文语法规则，最后两位前一定有and
+			if (d < 100 && (a != 0 || b != 0 || c != 0))
+				cout << " and ";
+			out(d);
+		}
+	}
+	cout << endl;
+}
+
+void Person::writing()
+{
+	cout << endl << "                                                       " << endl;
+	cout << "       ######################################          " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "       ######################################          " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "       ######################################          " << endl;
+}
+
+void Person::print()
+{
+	cout << name << "\t" << sex << "\t" << pid << "\t" << weight << "\t" << high << endl;
+}
+
+void Person::out(int a)
+{
+	int b = a % 100;
+	//若百位数不为0，输出百位数加hundred，若此时十位个位均为0，不加and
+	if (a / 100 != 0)
+	{
+		cout << num1[a / 100] << "hundred ";
+		if (b != 0)
+			cout << " and ";
+	}
+	//当后两位在20以内，直接调用num1[n],输出
+	if (b < 20)
+	{
+		cout << num1[b];
+	}
+	//当b大于20时
+	else
+	{
+		//先调用num10,输出十位数
+		cout << num10[b / 10];
+		//个位不为0时应输出个位数
+		if (b % 10 != 0)
+			cout << "\b-" << num1[b % 10];
+	}
+}
+
+Person::~Person()
+{
+	delete[] name;   //将申请的存储姓名的空间释放
+}
+
+//主函数
+void main()
+{
+	//创建对象
+	Person Jack("James Chen", 'M', "150102199308231115", 125, 175);
+	Jack.print();                   //输出人的属性
+	Jack.walking(20, 4);            //行走20步，1/4秒走一步
+	Jack.hearing("Hi! You are simple!");    //听英文句子
+	Jack.speek(1006);                       //说出整数1006的英文句子
+	cout << endl;
+	Jack.writing();                         //书写汉字“王”
+
+	system("pause");
+}
