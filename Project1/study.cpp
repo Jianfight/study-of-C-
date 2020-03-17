@@ -2843,7 +2843,7 @@ void Clock :: Report_Time()
 
 void main()
 {
-	//类的声明
+	//类对象的声明
 	Clock XJTU_Big_Ben;   //该语句声明了三个对象，也可以称声明了三个变量。
 
 	XJTU_Big_Ben.Set(0, 0, 0, 1000);
@@ -4873,9 +4873,12 @@ void main()
 */
 
 //类：继承
+/*
 #define _CRT_SECURE_NO_WARNINGS
+#pragma comment (lib, "winmm.lib")  //是为了在调用mciSendStringA函数时会提示无法解析外部函数，该语句链接winmm.lib
 #include<iostream>
 #include<windows.h>
+#include<mmsystem.h>    //媒体控制的头文件
 
 using namespace std;
 
@@ -4893,6 +4896,7 @@ static char* num10[] =
 	"", "", "twenty ", "thirty ", "forty ", "fifty ", "sixty ", "seventy ", "eighty ", "ninety "
 };
 
+//人类
 class Person
 {
 
@@ -4905,7 +4909,7 @@ private:
 	int high;        //身高
 
 public:
-	
+
 	Person();   //无参构造函数
 	Person(char* n, char s, char* p, int w, int h);   //有参构造函数
 
@@ -4931,10 +4935,10 @@ Person::Person()
 
 Person::Person(char* n, char s, char* p, int w, int h)
 {
-	cout << n;
-	cout << strlen(n) << endl;
+	//cout << n;
+	//cout << strlen(n) << endl;
 
-	name = new char[strlen(n) + 1];    //申请一处空间来存放输入姓名
+	if (name != NULL) name = new char[strlen(n) + 1];    //申请一处空间来存放输入姓名
 	strcpy(name, n);
 
 	sex = s;
@@ -4968,7 +4972,7 @@ void Person::walking(int k, int v)
 void Person::hearing(char* sentence)
 {
 	cout << endl << sentence << endl;            //显示输入的字符串
-	char* p = new char[strlen(sentence) + 1];    //动态申请一处空间来存储输入的字符串 
+	char* p = new char[strlen(sentence) + 1];    //动态申请一处空间来存储输入的字符串
 	strcpy(p, sentence);
 	char* pp = p;             //将字符串的首地址转存在另一个指针内，方便修改后读取字符串
 	while (*p)
@@ -5072,6 +5076,7 @@ Person::~Person()
 	delete[] name;   //将申请的存储姓名的空间释放
 }
 
+#if 0
 //主函数
 void main()
 {
@@ -5083,6 +5088,707 @@ void main()
 	Jack.speek(1006);                       //说出整数1006的英文句子
 	cout << endl;
 	Jack.writing();                         //书写汉字“王”
+
+	system("pause");
+}
+#endif // 0
+
+//使用继承的方式构建歌星类
+class sing_star : public Person
+{
+
+private:
+
+	float salary;    //薪水
+
+public:
+
+	sing_star();      //无参构造函数
+	sing_star(char* n, char s, char* p, int w, int h, float s1);    //有参类构造函数
+	void change_data(char* n, char s, char* p, int w, int h, float s1);  //修改数据
+	void playing(char* ps);    //演唱歌曲
+	void print();               //输出歌星属性值
+
+};
+//类外编写无参构造函数
+sing_star::sing_star():Person()      //歌星类继承自人类，同样在歌星类的构造函数中继承自人类的构造函数，在拓展歌星类新添加的成员的初始赋值
+{
+	salary = 0.0;
+}
+//类外编写有参构造函数
+sing_star::sing_star(char* n, char s, char* p, int w, int h, float s1)
+{
+	Person::change_data(n, s, p, w, h); //在该处并没有使用人类的有参构造函数，而是使用的人类的更改函数
+	salary = s1;
+}
+//类外编写修改函数，调用父类的修改函数，再其基础上进行扩展
+void sing_star::change_data(char* n, char s, char* p, int w, int h, float s1)
+{
+	Person::change_data(n, s, p, w, h);
+	salary = s1;
+}
+//类外编写播放歌曲函数
+void sing_star::playing(char* ps)  //ps指针指向的是歌曲存放的地址
+{
+	char str[100] = "play ";    //play后有空格
+	strcat(str, ps);            //将play 于歌曲存放路径连接，构成音乐播放函数的参数
+	cout << str;                //显示参数
+	mciSendStringA(str, NULL, 0, NULL);   //调用播放歌曲函数播放音乐
+
+	char a;
+	cin >> a;
+}
+//类外定义输出函数
+void sing_star::print()
+{
+	Person::print();
+	cout << salary << endl;
+}
+//主函数
+void main()
+{
+	//歌星类测试
+	sing_star Jack("James Chen", 'M', "150102199308231115", 125, 175, 10000);
+	Jack.print();                   //输出人的属性
+	Jack.walking(20, 4);            //行走20步，1/4秒走一步
+	Jack.hearing("Hi! You are simple!");    //听英文句子
+	Jack.speek(1006);                       //说出整数1006的英文句子
+	cout << endl;
+	Jack.writing();                         //书写汉字“王”
+	Jack.playing("C:\\ceshiyinyue.mp3");
+
+
+	system("pause");
+}
+*/
+
+//类：继承，日期类，时间类-》人类（具有出生日期和出生时间）
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<windows.h>
+
+using namespace std;
+
+
+//定义两个全局字符指针数组，存取所需的单词
+//num1中为1到19，空出了0，所以可以直接用num1[n]调用，得到n对应的单词
+static char* num1[] =
+{
+	"", "one ", "two ", "three ", "four ", "five ", "six ", "seven ", "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ",
+	"fourteen ", "fifteen ", "sixteen ", "seventeen ", "eighteen ", "nineteen "
+};
+
+//num10中为20-90，空出了0和1，所以可以直接用num10[n/10]调用，得到n对应单词
+static char* num10[] =
+{
+	"", "", "twenty ", "thirty ", "forty ", "fifty ", "sixty ", "seventy ", "eighty ", "ninety "
+};
+
+
+
+//日期类
+class Date
+{
+
+protected:   //保护成员，外界部分区域能够访问该成员，例如：b类继承自a类，那么在b类中就可以调用a类中的保护成员。
+
+	int year;
+	int month;
+	int day;
+
+public:
+
+	Date() { year = 1900, month = 1, day = 1; }          //无参构造函数
+	Date(int yy, int mm, int dd) { init(yy, mm, dd); }   //调用初始化函数来搭建有参构造函数
+
+	void init(int, int, int);                            //声明初始化函数
+	void print_ymd();
+	void print_mdy();
+
+	bool IsLeapYear();                                  //判断是否是闰年
+
+};
+
+
+void Date::init(int yy, int mm, int dd)
+{
+	//如果输入的日期不合理，将使用默认值代替，年份默认值为1900，月份默认值为1，天数的默认值为1
+
+	year = (yy >= 1900 && yy <= 2100) ? yy : 1900;  //年份有效性判断
+	month = (mm >= 1 && mm <= 12) ? mm : 1;         //月份有效性判断
+
+	switch (month)  //天数的有效性判断
+	{
+	case 4:     //4，6，9，11月每月只有30天，
+	case 6:
+	case 9:
+	case 11:    day = (dd >= 1 && dd <= 30) ? dd : 1; break;
+
+	case 2:   //2月天数判断
+		if (IsLeapYear())   //判断是否是闰年，闰年2月有29天，非闰年2月有28天
+			day = (dd >= 1 && dd <= 29) ? dd : 1;
+		else
+			day = (dd >= 1 && dd <= 28) ? dd : 1;
+		break;
+
+	default:   //大月天数判断
+		day = (dd >= 1 && dd <= 31) ? dd : 1;
+
+	}
+}
+
+void Date::print_ymd()
+{
+	cout << year << '-' << month << '-' << day << endl;
+}
+
+void Date::print_mdy()
+{
+	char* monthName[12] = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+	//欧美国家输出日期格式是：月份的英文表示 天数，年份。
+	cout << monthName[month - 1] << ' ' << day << ',' << year;
+}
+
+bool Date::IsLeapYear()
+{
+	if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+		return true;    //闰年
+	else
+		return false;   //非闰年
+}
+
+
+//时间类
+class Time
+{
+
+private:
+
+	bool ceshi;   //在基类种定义一个私有的成员数据，观察其在派生类种是否可以直接访问
+
+protected:
+
+	int hour;
+	int minute;
+	int second;
+
+public:
+
+	Time() { hour = minute = second = 0; }           //无参构造函数
+	Time(int h, int m, int s) { init(h, m, s); }      //有参构造函数
+
+	void init(int, int, int);
+	void print_time() { cout << hour << ':' << minute << ':' << second << endl; }
+};
+
+void Time::init(int h, int m, int s)
+{
+	hour = h >= 0 && h <= 24 ? h : 0;         //在赋值之前先进行有效性检验
+	minute = m >= 0 && m <= 60 ? m : 0;
+	second = s >= 0 && m <= 60 ? m : 0;
+}
+
+
+//派生类：人类
+class Person : public Date, public Time   //人类继承自日期类和时间类这样就可以包含了基类的出身日期和出生时间
+{
+
+private:
+
+	char* name;      //姓名
+	char sex;        //性别
+	char pid[19];    //身份证号
+	int weight;      //体重
+	int high;        //身高
+
+	//因为我们是使用继承的方式定义的人类，故其成员还包括日期类和时间类的成员
+
+public:
+
+	Person();                                                                 //无参构造函数
+	Person(char* n, char s, char* p, int w, int hh, int hr, int mr, int sd);   //有参构造函数，在有参调用函数中直接使用改变数据函数，这样的方式可以减少代码量
+
+	//该函数的声明中并没有给出日期的形参，是因为身份证号中就包括了人的出生日期
+	void change_data(char* n, char s, char* p, int w, int hh, int hr, int mr, int sd);
+	void walking(int k, int v);
+	void hearing(char* sentence);
+
+	void out(int a);  //用于翻译数字
+	void speek(int n);
+	void writing();
+	void ShowMe();
+	~Person();                 //定义一个析构函数，释放name动态申请的空间
+
+};
+
+Person::Person()
+{
+	name = new char[strlen("XXX") + 1];
+	strcpy(name, "XXX");
+
+	sex = 'X';
+
+	strcpy(pid, "XXXXXXXXXXXXXXXXXX");
+
+	weight = high = 0;
+
+	//ceshi = true;  //如果在基类种将成员数据归入私有，那么在派生类种将不能直接访问该成员数据
+	//以下成员数据是从基类中继承过来的
+	year = 1900;
+
+	month = day = 1;
+
+	hour = minute = second = 0;
+}
+
+Person::Person(char* n, char s, char* p, int w, int hh, int hr, int mr, int sd)
+{
+	change_data(n, s, p, w, hh, hr, mr, sd);
+}
+
+void Person::change_data(char* n, char s, char* p, int w, int hh, int hr, int mr, int sd)
+{
+	name = new char[strlen(n) + 1];
+	strcpy(name, n);
+
+	sex = s;
+	strcpy(pid, p);
+	weight = w;
+	high = hh;
+
+	//根据身份证号码获取人的出生年月日
+	char temp[5];
+	strncpy(temp, p + 6, 4);      //将指向身份证信息指针向后移动6位，在相应的复制6位后面的4位，即出生的年份
+	year = atoi(temp);            //atoi将字符串型转换为整型
+
+	strncpy(temp, p + 10, 2);     //同理提取出生的月份
+	temp[2] = '\0';               //因为数字格式的月份最多占两位，故在第三个位置添加了字符串结束符，下标0对应第一个位置，故而下标2对应第三个位置
+	month = atoi(temp);
+
+	strncpy(temp, p + 12, 2);     //同理提取出生的日期
+	temp[2] = '\0';
+	day = atoi(temp);
+
+	hour = hr;
+	minute = mr;
+	second = sd;
+}
+
+void Person::walking(int k, int v)
+{
+	cout << "\n" << name << "水平行走" << k << "步" << endl;
+	for (int i = 0; i < k; i++)
+	{
+		cout << ' ' << "o_o";
+		Sleep(1000 / v);               //Sleep函数的参数是以毫秒为单位的，其属于windows头文件
+		cout << "\b\b\b";
+	}
+}
+
+void Person::hearing(char* sentence)
+{
+	cout << endl << sentence << endl;            //显示输入的字符串
+	char* p = new char[strlen(sentence) + 1];    //动态申请一处空间来存储输入的字符串
+	strcpy(p, sentence);
+	char* pp = p;             //将字符串的首地址转存在另一个指针内，方便修改后读取字符串
+	while (*p)
+	{
+		if (*p >= 'a' && *p <= 'z')
+			*p = 'A' + (*p - 'a' + 0);           //小写变大写
+		else if (*p >= 'A' && *p <= 'z')
+			*p = 'a' + (*p - 'A');              //大写变小写
+
+		p++;                                    //将指针向后移动一位，指向字符串中的下一个字符
+	}
+
+	cout << pp << endl;
+	delete[] pp;                 //释放申请的字符数组空间，之所以不是释放p指针是因为，p在处理过程中已经变换了地址，其并不是指向申请空间的首地址
+
+}
+
+void Person::speek(int n)
+{
+	if (n > 1999999999)
+		cout << "dev c++平台无法处理大于1999999999位的数字" << endl;
+	else
+	{
+		//三位三位取走，存入abcd四个变量中
+		int a = n / 1000000000, b = (n % 1000000000) / 1000000, c = (n % 1000000) / 1000, d = n % 1000;
+		//不等于0时，输出并加上millon或thousand
+		if (a != 0)
+		{
+			out(a);
+			cout << "billion ";
+		}
+		if (b != 0)
+		{
+			out(b);
+			cout << "million ";
+		}
+		if (c != 0)
+		{
+			out(c);
+			cout << "thousand ";
+		}
+		if (d != 0)
+		{
+			//根据英文语法规则，最后两位前一定有and
+			if (d < 100 && (a != 0 || b != 0 || c != 0))
+				cout << " and ";
+			out(d);
+		}
+	}
+	cout << endl;
+}
+
+void Person::writing()
+{
+	cout << endl << "                                                       " << endl;
+	cout << "       ######################################          " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "       ######################################          " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "                         ##                           " << endl;
+	cout << "       ######################################          " << endl;
+}
+
+void Person::ShowMe()
+{
+	cout << "姓名：" << name;
+	cout << '\t' << "性别：" << sex << endl;
+	cout << "身份证号：" << pid << endl;
+	cout << "体重：" << weight/2 << "kg";
+	cout << '\t' << "身高：" << high << "cm" << endl;
+	cout << "出生日期：";
+	print_ymd();
+	cout << "出生时间：";
+	print_time();
+}
+
+void Person::out(int a)
+{
+	int b = a % 100;
+	//若百位数不为0，输出百位数加hundred，若此时十位个位均为0，不加and
+	if (a / 100 != 0)
+	{
+		cout << num1[a / 100] << "hundred ";
+		if (b != 0)
+			cout << " and ";
+	}
+	//当后两位在20以内，直接调用num1[n],输出
+	if (b < 20)
+	{
+		cout << num1[b];
+	}
+	//当b大于20时
+	else
+	{
+		//先调用num10,输出十位数
+		cout << num10[b / 10];
+		//个位不为0时应输出个位数
+		if (b % 10 != 0)
+			cout << "\b-" << num1[b % 10];
+	}
+}
+
+Person::~Person()
+{
+	delete[] name;   //释放name动态申请的空间
+}
+
+
+//主函数
+void main()
+{
+	Person wj("Wang Jian", 'm', "150102199308231115", 125, 175, 0, 5, 15);
+	wj.ShowMe();
+	wj.walking(10, 4);
+	wj.hearing("You are simple!");
+	wj.speek(22222);
+	cout << endl;
+	wj.writing();
+
+
+	system("pause");
+}
+*/
+
+//类：继承，普通手机类-》智能手机类
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+class mobile
+{
+
+private:
+
+	char mynumber[12];       //机主的电话号码
+	char m_type[40];         //手机型号
+	float price;             //手机价格
+
+public:
+
+	mobile()           //无参构造函数
+	{
+		init("00000000000", "Non_type", 0);
+	}
+
+	void init(char* number, char* pt, float pri);    //初始化
+
+	void dial();                                     //拨打电话
+
+	void answer(char othernumber[]);                 //接听电话
+
+	void hangup();                                   //挂断电话
+
+	void show();                                     //显示普通手机信息
+
+};
+
+void mobile::init(char* number, char* pt, float pri)
+{
+	strcpy(mynumber, number);
+	strcpy(m_type, pt);
+	price = pri;
+}
+
+void mobile::dial()
+{
+	cout << "Dialing number is " << mynumber << endl;
+	cout << "Dialing on....." << endl;
+}
+
+void mobile::answer(char othernumber[])
+{
+	cout << "Answering number is " << othernumber << endl;
+	cout << "Answering in......" << endl;
+}
+
+void mobile::hangup()
+{
+	cout << "Hanging up..." << endl;
+}
+
+void mobile::show()
+{
+	cout << mynumber << '\t' << m_type << '\t' << price << endl;
+}
+
+//派生智能手机类
+class smartphone :public mobile //派生类，public是继承修饰符
+{
+
+private:
+
+	char OS[20];      //交互式操作系统，派生类新增数据成员
+	int memory;       //存储卡容量，派生类新增数据成员
+
+public:
+
+	smartphone()
+	{
+		init("00000000000", "Non_type", 0, "Non_OS", 0);
+	}
+
+	void init(char* number, char* pt, float pri, char* os, int mem);
+	void send(char othernumber[], char message[]);                        //发送短信
+	void showmemory();                                                   //显示内存大小
+	void show();                                                         //显示智能手机信息
+};
+
+void smartphone::init(char* number, char* pt, float pri, char* os, int mem)
+{
+	mobile::init(number, pt, pri);
+	strcpy(OS, os);
+	memory = mem;
+}
+
+void smartphone::send(char othernumber[], char message[])
+{
+	cout << "Sending message is " << message << " to " << othernumber << endl;
+	cout << "Sending on..." << endl;
+}
+
+void smartphone::showmemory()
+{
+	cout << "Memory is: " << memory << endl;
+}
+
+void smartphone::show()
+{
+	mobile::show();
+	cout << OS << '\t' << memory << endl;
+}
+//测试主函数
+void main()
+{
+	mobile m;              //声明手机对象
+	smartphone m1;         //声明智能手机对象
+
+	m.init("11111111111", "motorola", 3000);                //调用基类init
+	m.dial();
+	m.answer("222222222222");
+	m.hangup();
+	m.show();
+
+	//调用派生类的init
+	m1.init("33333333333", "sungxing", 5000, "windows8", 2048);
+	m1.send("22222222222", "hellow!");
+	m1.dial();
+	m1.answer("22222222222");
+	m1.hangup();
+	m1.showmemory();
+	m1.show();
+
+
+	system("pause");
+}
+*/
+
+//类：继承，私有继承方式
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+
+using namespace std;
+
+//基类：人类定义
+class Person
+{
+
+protected:
+//private:
+
+	char* Name;
+	int Age;
+	char Sex;
+
+	
+
+public:
+
+	void Register(char* name, int age, char sex)   //设置数据成员
+	{
+		Name = new char[strlen(name) + 1];
+		strcpy(Name, name);
+		Age = age;
+		Sex = (sex == 'm' ? 'm' : 'f');           //应为性别只有两个选项，所以添加了一个关于性别的判断
+	}
+
+	void ShowMe()
+	{
+		cout << Name << "\t" << Sex << "\t" << Age << "\t";
+	}
+
+	~Person()
+	{
+		delete[] Name;
+		cout << "Name被释放";
+	}
+};
+//派生类：雇员类定义
+class Employee :private Person
+{
+	char* Dept;         //工作部门
+	float Salary;          //月薪
+
+public:
+
+	Employee();         //无参构造函数
+	void EmployeeRegidter(char* name, int age, char sex, char* dept, float salary);    //设置数据成员
+	void ShowEmp();
+};
+
+Employee::Employee()
+{
+	Register("XXX", 0, 'X');
+	Dept = new char[strlen("XXXXXX") + 1];
+	strcpy(Dept, "XXXXXX");
+	Salary = 0;
+}
+
+void Employee::EmployeeRegidter(char* name, int age, char sex, char* dept, float salary)
+{
+	Register(name, age, sex);
+
+	Dept = new char[strlen(dept) + 1];
+	strcpy(Dept, dept);
+	Salary = salary;
+}
+
+void Employee::ShowEmp()
+{
+	//cout << Name << '\t' << Sex << '\t' << Age << '\t';   //将protected修改为private，会发生什么呢？
+	ShowMe();   //使用私有继承方式，基类中的私有成员无法在派生类中直接调用，但派生类可以通过基类中的公有成员函数去调用基类中的私有成员，前提是两者有关系
+
+
+	cout << Dept << '\t' << Salary << endl;
+}
+
+#if 0
+
+//主函数，测试私有继承
+void main()
+{
+
+	{
+		Employee emp;
+
+		emp.EmployeeRegidter("王健", 40, 'f', "图书馆", 2000);
+
+		emp.ShowEmp();
+
+		//emp.ShowMe();   //当将继承方式修改为私有继承时，基类中的公有成员会成为派生类的私有成员，派生类使用者无法直接调用访问私有成员
+	}
+
+
+
+	system("pause");
+}
+#endif // 0
+
+//保护继承
+class Student : protected Person
+{
+	int Number;
+	char ClassName[10];
+
+public:
+
+	void Register(char* classname, int number, char* name, int age, char sex)
+	{
+		strcpy(ClassName, classname);
+		Number = number;
+
+		Name = new char[strlen(name) + 1];
+		strcpy(Name, name);
+		Age = age;
+		Sex = (sex == 'm' ? 'm' : 'f');
+	}
+
+	void ShowStu()
+	{
+		cout << Number << '\t' << ClassName << '\t';
+		ShowMe();
+	}
+};
+
+//主函数，测试保护继承
+void main()
+{
+	Student stu;
+	stu.Register("测绘C2", 137312, "王健", 18, 'm');
+	stu.ShowStu();
+	//stu.ShowMe();          //错误，对象不能访问保护成员，使用保护继承方式，基类中的公有成员和保护成员，都会成为派生类中的保护成员
 
 	system("pause");
 }
