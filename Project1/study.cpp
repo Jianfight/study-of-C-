@@ -5655,7 +5655,8 @@ void main()
 }
 */
 
-//类：继承，私有继承方式
+//类：继承，私有继承方式，保护继承方式
+/*
 #define _CRT_SECURE_NO_WARNINGS
 #include<iostream>
 
@@ -5672,7 +5673,7 @@ protected:
 	int Age;
 	char Sex;
 
-	
+
 
 public:
 
@@ -5789,6 +5790,521 @@ void main()
 	stu.Register("测绘C2", 137312, "王健", 18, 'm');
 	stu.ShowStu();
 	//stu.ShowMe();          //错误，对象不能访问保护成员，使用保护继承方式，基类中的公有成员和保护成员，都会成为派生类中的保护成员
+
+	system("pause");
+}
+*/
+
+//类：继承，派生类的构造函数
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+
+using namespace std;
+
+//基类
+class Person
+{
+
+private:
+
+	char Name[10];
+	int Age;
+
+public:
+
+	Person(char* name, int age)   //构造函数
+	{
+		strcpy(Name, name);
+		Age = age;
+		cout << "constrcutor of person" << Name << endl;
+	}
+
+	void Show_Person()
+	{
+		cout << "姓名： " << Name << '\t' << "年龄： " << Age;
+	}
+
+	~Person() { cout << "deconstrutor of person" << Name << endl; }   //析构函数
+
+};
+
+//派生类
+class Employee :public Person
+{
+
+private:
+
+	char Dept[20];
+	Person Leader;   //在派生类中内嵌了一个对象
+
+public:
+
+	//派生类的构造函数
+	Employee(char* name, int age, char* dept, char* name1, int age1) :Person(name, age), Leader(name1, age1)
+	{
+		strcpy(Dept, dept);
+		cout << "constructor of Employee" << endl;
+	}
+
+	void Show_Employee()
+	{
+		Show_Person();
+		cout << '\t' << "部门： " << Dept << endl;
+		Leader.Show_Person();
+		cout << endl;
+	}
+
+};
+
+//测试
+void main()
+{
+	{//添加一对大括号，增加了一个作用域，方便析构函数的显示
+		Employee emp("张弓长", 40, "人事处", "李木子", 36);
+		emp.Show_Employee();
+	}
+
+	system("pause");
+}
+*/
+
+//类：派生类，点类->圆类->圆柱体类
+/*
+#include<iostream>
+
+using namespace std;
+
+//点类
+class Point
+{
+
+private:
+
+	double x, y;
+
+public:
+
+	Point(double = 0, double = 0);       //构造函数
+	void SetPoint(double, double);       //设置坐标
+	int GetX() { return x; }       //取x坐标
+	int GetY() { return y; }       //取y坐标
+	void Print();                  //输出点的坐标
+};
+
+Point::Point(double a, double b)
+{
+	SetPoint(a, b);
+}
+
+void Point::SetPoint(double a, double b)
+{
+	x = a;
+	y = b;
+}
+
+void Point::Print()
+{
+	cout << '[' << x << ',' << y << ']';
+}
+
+//派生类：圆类
+class Circle :public Point
+{
+
+private:
+
+	double radius;
+
+public:
+
+	Circle(double x = 0, double y = 0, double r = 0.0);       //构造函数
+	void SetRadius(double);                                   //设置半径
+	double GetRadius() { return radius; }                     //取半径
+	double Area() { return 3.1415926 * radius * radius; }  //计算面积
+	void Print();                                               //输出圆心坐标和半径
+
+};
+
+Circle::Circle(double a, double b, double r):Point(a,b)   //构造函数，派生类继承自基类，故在派生类的构造函数中引用基类的构造函数为基类中的数据成员赋值
+{
+	SetRadius(r);
+}
+
+void Circle::SetRadius(double r)
+{
+	radius = (r > 0 ? r : 0);
+}
+
+void Circle::Print()
+{
+	cout << "Center = ";
+	Point::Print();
+	cout << "; Radius = " << radius << endl;
+}
+
+//从派生类再派生类：圆柱体类
+class Cylinder:public Circle
+{
+
+private:
+
+	double high;
+
+public:
+
+	Cylinder(double x, double y, double r, double h) :Circle(x, y, h) { high = h; }
+
+	void Set_data(double x, double y, double r, double h);    //修改数据
+
+	double Area();                                          //计算表面积
+
+	double Volume();                                        //计算体积
+
+	void Print();                                           //输出圆心坐标和半径
+};
+
+void Cylinder::Set_data(double x, double y, double r, double h)
+{
+	SetPoint(x, y);
+	SetRadius(r);
+	high = h;
+}
+
+double Cylinder::Area()
+{
+	double r = GetRadius();
+	double areaofcircle = Circle::Area();
+	return 2 * 3.1415926 * r * high + 2 * areaofcircle;
+}
+
+double Cylinder::Volume()
+{
+	return Circle::Area() * high;
+}
+
+void Cylinder::Print()
+{
+	Circle::Print();
+	cout << "高为：" << high;
+}
+
+//测试主函数
+void main()
+{
+	cout << "测试点类" << endl;
+	Point p(30, 50);
+	p.Print();
+	cout << endl;
+	system("pause");
+
+	cout << "测试圆类" << endl;
+	Circle c(120, 80, 10);
+	c.Print();
+	cout << "\n圆面积：" << c.Area() << endl;
+	system("pause");
+
+	cout << "测试圆柱体类" << endl;
+	Cylinder cy(240, 160, 10, 10);
+	cout << "圆柱体的中心点： ";
+	cy.Point::Print();                       //在派生类中通过基类调用基类的成员函数
+	cout << "\n圆柱体的表面积： " << cy.Area();
+	cout << "\n圆柱体的体积：" << cy.Volume();
+	system("pause");
+}
+*/
+
+//类：派生类，U盘->MP3
+/*
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<Windows.h>
+#pragma comment (lib, "winmm.lib")  //是为了在调用mciSendStringA函数时会提示无法解析外部函数，该语句链接winmm.lib
+
+using namespace std;
+
+//U盘类
+class UDISK
+{
+
+private:
+
+	char* crow[100];     //按行存储信息的指针数组crow,一个字符指针对应一行
+	int nrow;             //存储行数
+
+public:
+
+	UDISK(void) { nrow = 0; }    //构造函数
+	void read(void);             //读信息
+	void write(char* pstr);      //写信息
+	~UDISK() { cout << "撤销U盘对象" << endl; }
+
+};
+
+void UDISK::read(void)
+{
+	for (int i = 0; i < nrow; i++) cout << crow[i] << endl;
+}
+
+void UDISK::write(char* pstr)
+{
+	crow[nrow] = pstr;
+	nrow++;
+}
+
+//MP3类
+class MP3 :public UDISK
+{
+
+public:
+
+	MP3() :UDISK() {};
+	void play(char* pstr);
+	~MP3() { cout << "撤销MP3对象" << endl; }
+
+};
+void MP3::play(char* pstr)
+{
+	char str[100] = "play ";   //注意在play后有一个空格
+	strcat(str, pstr);
+	cout << "音乐的存储路径：";
+	mciSendStringA(str, NULL, 0, NULL);
+}
+
+//测试代码
+void main()
+{
+	UDISK U1;
+	cout << "--模拟U盘写--" << endl;
+	U1.write("劝学");
+	U1.write("三更灯火五更鸡，");
+	U1.write("正是男儿读书时。");
+	U1.write("黑发不知勤学早，");
+	U1.write("白首方悔读书迟。");
+	cout << "--模拟U盘读--" << endl;
+	U1.read();
+
+	MP3 M1;
+	cout << "--模拟MP3播放--" << endl;
+	//MP3文件与可执行文件放在同一路径中
+	M1.play("c:\\ceshiyinyue.mp3");
+
+	char a;
+	cin >> a;
+	system("pause");
+}
+*/
+
+//类：继承，学生->本科生->硕士生->博士生
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+using namespace std;
+
+//学生类
+class Student
+{
+
+private:
+
+	int stdno;   //学号
+	char* name;  //姓名
+	int age;     //年龄
+	char* classname;  //班级名称
+	char* schoolname;  //学校名称
+
+public:
+
+	Student();     //构造函数
+
+	Student(int stdno, char name[], int age, char classname[], char schoolname[])
+	{
+		this->stdno = stdno;
+		this->age = age;
+
+		this->name = new char[strlen(name) + 1];
+		strcpy(this->name, name);
+
+		this->classname = new char[strlen(classname) + 1];
+		strcpy(this->classname, classname);
+
+		this->schoolname = new char[strlen(schoolname) + 1];
+		strcpy(this->schoolname, schoolname);
+	}
+
+	void show();   //显示函数
+
+	~Student();    //析构函数
+};
+
+Student::Student()
+{
+	stdno = 0;
+	age = 0;
+
+	name = new char[strlen("XXXX") + 1];
+	strcpy(name, "XXXX");
+
+	classname = new char[strlen("XXXX") + 1];
+	strcpy(classname, "XXXX");
+
+	schoolname = new char[strlen("XXXX") + 1];
+	strcpy(schoolname, "XXXX");
+}
+
+void Student::show()
+{
+	cout << name << "\t";
+	cout << stdno << "\t";
+	cout << age << "\t";
+	cout << classname << "\t";
+	cout << schoolname << endl;
+}
+
+Student::~Student()
+{
+	delete[] name;
+	delete[] classname;
+	delete[] schoolname;
+}
+
+//派生类：本科生类
+class CollegeStudent : public Student
+{
+
+private:
+
+	char* classteacher;     //辅导员
+
+public:
+
+	//构造函数
+	CollegeStudent(int stdno, char name[], int age, char classname[], char schoolname[], char classteacher[]):Student(stdno, name, age, classname, schoolname)
+	{
+		this->classteacher = new char[strlen(classteacher) + 1];
+		strcpy(this->classteacher, classteacher);
+	}
+
+	//显示函数
+	void show()
+	{
+		Student::show();
+		cout << classteacher << endl;
+	}
+
+	//析构函数
+	~CollegeStudent()
+	{
+		delete[] classteacher;
+	}
+};
+
+//派生类：硕士生类
+class GraduateStudent :public CollegeStudent
+{
+
+private:
+
+	char* tutor;                 //导师
+	char* projectname;           //课题
+
+public:
+
+	//构造函数
+	GraduateStudent(int stdno, char name[], int age, char classname[], char schoolname[], char classteacher[], char tutor[], char projectname[]) :CollegeStudent(stdno, name, age, classname, schoolname, classteacher)
+	{
+		this->tutor = new char[strlen(tutor) + 1];
+		strcpy(this->tutor, tutor);
+
+		this->projectname = new char[strlen(projectname) + 1];
+		strcpy(this->projectname, projectname);
+	}
+
+	//显示函数
+	void show()
+	{
+		CollegeStudent::show();
+		cout << tutor << "\t";
+		cout << projectname << endl;
+	}
+
+	//析构函数
+	~GraduateStudent()
+	{
+		delete[] tutor;
+		delete[] projectname;
+	}
+};
+
+//派生类：博士生
+class DoctorStudent :public GraduateStudent
+{
+	
+private:
+
+	char* researchname;     //研究项目
+
+public:
+
+	DoctorStudent(int stdno, char name[], int age, char classname[], char schoolname[], char classteacher[], char tutor[], char projectname[], char researchname[]) :GraduateStudent(stdno, name, age, classname, schoolname, classteacher, tutor, projectname)
+	{
+		this->researchname = new char[strlen(researchname) + 1];
+		strcpy(this->researchname, researchname);
+	}
+
+	void show()
+	{
+		GraduateStudent::show();
+		cout << researchname << endl;
+	}
+
+	~DoctorStudent()
+	{
+		delete[] researchname;
+	}
+};
+
+//测试主函数
+void main()
+{
+	int stdno;              //存储学号
+	char name[20];          //存储姓名
+	int age;                //存储年龄
+	char classname[20];     //存储班级
+	char schoolname[20];    //存储学校名称
+
+	cout << "input the information of student: " << endl;
+	cout << "姓名："; cin >> name;
+	cout << "学号："; cin >> stdno;
+	cout << "年龄："; cin >> age;
+	cout << "班级名称： "; cin >> classname;
+	cout << "学校名称： "; cin >> schoolname;
+
+	Student student1(stdno, name, age, classname, schoolname);
+	cout << endl << "the information of student is: " << endl;
+	student1.show();
+
+	char classteacher[20];   //存储辅导员姓名
+
+	cout << "input the information of collegestudent: " << endl;
+	cout << "辅导员姓名："; cin >> classteacher;
+	CollegeStudent student2(stdno, name, age, classname, schoolname, classteacher);
+	cout << "the information of collegestudent is: " << endl;
+	student2.show();
+
+	char tutor[20];         //存储导师姓名
+	char projectname[100];   //存储项目名称
+
+	cout << "input the information of graduatestudent: " << endl;
+	cout << "导师姓名："; cin >> tutor;
+	cout << "项目名称："; cin >> projectname;
+	GraduateStudent student3(stdno, name, age, classname, schoolname, classteacher, tutor, projectname);
+	student3.show();
+
+	char researchname[50];
+	cout << "input the inforname of doctorstudent: " << endl;
+	cout << "研究名称： "; cin >> researchname;
+	DoctorStudent student4(stdno, name, age, classname, schoolname, classteacher, tutor, projectname, researchname);
+	student4.show();
 
 	system("pause");
 }
