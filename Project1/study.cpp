@@ -6096,6 +6096,7 @@ void main()
 */
 
 //类：继承，学生->本科生->硕士生->博士生
+/*
 #define _CRT_SECURE_NO_WARNINGS
 #include<iostream>
 using namespace std;
@@ -6238,7 +6239,7 @@ public:
 //派生类：博士生
 class DoctorStudent :public GraduateStudent
 {
-	
+
 private:
 
 	char* researchname;     //研究项目
@@ -6305,6 +6306,128 @@ void main()
 	cout << "研究名称： "; cin >> researchname;
 	DoctorStudent student4(stdno, name, age, classname, schoolname, classteacher, tutor, projectname, researchname);
 	student4.show();
+
+	system("pause");
+}
+*/
+
+//类：多态
+//编译时多态举例
+#if 0
+#include<iostream>
+using namespace std;
+
+//定义三个重载函数
+char max_(char a, char b) { return a > b ? a : b; }
+int max_(int a, int b) { return a > b ? a : b; }
+float max_(float x, float y) { return x > y ? x : y; }
+
+void main()
+{
+	float a = 3.14, b = 2.718;
+	cout << "d与s：" << max_('d', 's') << "大" << endl;
+	cout << "28与168:" << max_(28, 168) << "大" << endl;
+	cout << "3.14与2.718：" << max_(a, b) << "大" << endl;
+
+	system("pause");
+}
+#endif
+//运行时多态举例
+#if 0
+#include<iostream>
+using namespace std;
+
+class pet
+{
+public:
+	virtual void speak() { cout << "zzz" << endl; }   //vortual 代表的是虚函数
+};
+
+class cat :public pet
+{
+	void speak() { cout << "miao!miao!" << endl; }
+};
+
+class dog :public pet
+{
+	void speak() { cout << "wangwang!" << endl; }
+};
+
+void main()
+{
+	pet pet1, * p = &pet1;    //定义宠物类变量，p为宠物类指针
+	cat cat1;                 //定义猫类对象
+	dog dog1;                 //定义狗类对象
+
+	int x;                      //根据用户的输入将猫或狗对象的指针赋值给p指针
+	cin >> x;
+	if (x == 1) p = &cat1;
+	if (x == 2) p = &dog1;
+
+	p->speak();                  //究竟运行那个函数，只有运行时知道
+
+	system("pause");
+}
+#endif
+
+//类：派生类对象替换基类对象
+#include<iostream>
+
+using namespace std;
+
+class mobile
+{
+public:
+
+	mobile() {}     //构造函数
+	char mynumber[11];
+	void showinfo()
+	{
+		 cout << "The phone is mobile" << endl;
+	}
+};
+class mobilegsm :public mobile
+{
+public:
+	mobilegsm(){}
+	void showinfo()
+	{
+		cout << "The phone is mobilegsm" << endl;
+	}
+};
+class mobilecdma :public mobile
+{
+public:
+	mobilecdma(){}
+	void showinfo()
+	{
+		cout << "The phone is mobilecdma" << endl;
+	}
+};
+//以下这种方式，如果不在基类中将showinfo函数定义为虚函数，以下调用的都是基类的showinfo函数
+void main()
+{
+	mobile m, * p1;        //基类对象指针p1，基类对象m
+	mobilecdma cdma;
+	mobilegsm gsm;
+
+	m = gsm;               //用gsm类对象给mobile类对象赋值
+	m.showinfo();
+
+	m = cdma;              //用cdma类对象给mobile类对象赋值
+	m.showinfo();
+
+	p1 = &gsm;             //用gsm类对象地址给mobile类对象赋值
+	p1->showinfo();
+
+	p1 = &cdma;            //用cdma类对象地址给mobile类对象赋值
+	p1->showinfo();
+
+	mobile& p4 = gsm;      //用gsm类对象初始化mobile类引用
+	p4.showinfo();
+
+	mobile& p5 = cdma;      //用cdma类对象初始化mobile类引用
+	p5.showinfo();
 
 	system("pause");
 }
